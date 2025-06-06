@@ -40,14 +40,23 @@ class _HomepageState extends State<Homepage> {
           SizedBox(height: 24),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: getColorByTheme(context: context, colorClass: AppColors.btnColor),
+              backgroundColor: getColorByTheme(
+                context: context,
+                colorClass: AppColors.btnColor,
+              ),
             ),
             onPressed: () {
               context.read<ThemeBloc>().add(ToggleThemeEvent());
             },
-            child: Text('Toggle Theme', style: TextStyle(
-              color: getColorByTheme(context: context, colorClass: AppColors.btnTextColor),
-            ),),
+            child: Text(
+              'Toggle Theme',
+              style: TextStyle(
+                color: getColorByTheme(
+                  context: context,
+                  colorClass: AppColors.btnTextColor,
+                ),
+              ),
+            ),
           ),
         ],
       ),
