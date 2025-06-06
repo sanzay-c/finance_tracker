@@ -12,20 +12,28 @@ class AppColors {
   static ColorModel cardColor = ColorModel(
     darkModeColor: const Color(0xFF1F1F1F),
     lightModeColor: const Color(0xFFFAFAFA),
- );
+  );
 
   static ColorModel btnColor = ColorModel(
-    darkModeColor:  const Color.fromARGB(255, 57, 57, 57),
+    darkModeColor: const Color.fromARGB(255, 57, 57, 57),
     lightModeColor: Colors.red,
   );
-  
+
   static ColorModel btnTextColor = ColorModel(
-    darkModeColor:  Colors.white,
+    darkModeColor: Colors.white,
     lightModeColor: Colors.black,
   );
 
-}
+  static ColorModel buttonColor = ColorModel(
+    lightModeColor: const Color(0xFFF48BD4), // lighter pink
+    darkModeColor: const Color(0xFFE50ABA),
+  );
 
+  static ColorModel splashColor = ColorModel(
+  lightModeColor: const Color(0xFFE0BBFF), // Violet 100 - light violet
+  darkModeColor: const Color(0xFF9B59B6),  // Darker violet for dark mode
+);
+}
 
 extension ThemeContextExtension on BuildContext {
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
@@ -41,4 +49,3 @@ Color getColorByTheme({
   if (colorClass == null) return isDark ? fallbackDark : fallbackLight;
   return isDark ? colorClass.darkModeColor : colorClass.lightModeColor;
 }
-
