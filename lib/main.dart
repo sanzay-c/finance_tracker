@@ -1,3 +1,4 @@
+import 'package:finance_tracker/add_expense_screen.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
@@ -13,9 +14,10 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => LanguageBloc()..add(LoadLanguageEvent()), // Language
+          create:
+              (context) => LanguageBloc()..add(LoadLanguageEvent()), // Language
         ),
-        BlocProvider(create: (context) => ThemeBloc()), // Theme 
+        BlocProvider(create: (context) => ThemeBloc()), // Theme
       ],
       child: (const MyApp()),
     ),
@@ -51,7 +53,7 @@ class _MyAppState extends State<MyApp> {
                 GlobalCupertinoLocalizations.delegate,
                 AppLocalizations.delegate,
               ],
-              
+
               themeMode: themeState.themeMode,
               theme: ThemeData(
                 textTheme: GoogleFonts.poppinsTextTheme(),
@@ -62,7 +64,7 @@ class _MyAppState extends State<MyApp> {
                 brightness: Brightness.dark,
               ),
               debugShowCheckedModeBanner: false,
-              home: Homepage(),
+              home: AddExpenseScreen(),
             );
           },
         );
@@ -70,5 +72,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-
