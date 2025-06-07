@@ -2,5 +2,12 @@
   "title":"hello",
   "helloWorld":"Hello World",
   "greetings":"geetings",
-  "expenseTracker":"Expense Tracker"
+  "expenseTracker":"Expense Tracker",
+  "profile":"Profile",
+  "editProfile":"Edit Profile",
+  "setting":"Setting",
+  "logout":"Logout",
+  "profileSetting":"Profile Setting",
+  "langaugeSetting":"Language Setting",
+  "themeToggle":"Theme Toggle"
 }

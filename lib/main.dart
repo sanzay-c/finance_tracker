@@ -1,8 +1,8 @@
 import 'package:finance_tracker/add_expense_screen.dart';
+import 'package:finance_tracker/common/features/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
-import 'package:finance_tracker/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
                 brightness: Brightness.dark,
               ),
               debugShowCheckedModeBanner: false,
-              home: AddExpenseScreen(),
+              home: BottomNavBar(),
             );
           },
         );

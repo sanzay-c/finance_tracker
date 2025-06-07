@@ -23,6 +23,22 @@ class AppColors {
     darkModeColor: Colors.white,
     lightModeColor: Colors.black,
   );
+  static ColorModel containerBorderColor = ColorModel(
+    darkModeColor: Colors.white,
+    lightModeColor: Colors.grey,
+  );
+  static ColorModel profileBoxColor = ColorModel(
+    darkModeColor: Colors.black,
+    lightModeColor: Colors.white,
+  );
+  static ColorModel profileIconColor = ColorModel(
+    darkModeColor: Colors.white,
+    lightModeColor: Colors.grey,
+  );
+  static ColorModel profileTextColor = ColorModel(
+    darkModeColor: Colors.white,
+    lightModeColor: Colors.black,
+  );
 }
 
 extension ThemeContextExtension on BuildContext {

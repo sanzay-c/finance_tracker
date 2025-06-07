@@ -2,5 +2,12 @@
  "title": "नमस्ते",
  "helloWorld": "नमस्ते संसार",
  "greetings": "नमस्कार",
- "expenseTracker": "खर्च ट्रैकर"
+ "expenseTracker": "खर्च ट्रैकर",
+  "profile": "प्रोफाइल",
+  "editProfile": "प्रोफाइल सम्पादन",
+  "setting": "सेटिङ्ग",
+  "logout": "लगआउट",
+  "profileSetting": "प्रोफाइल सेटिङ्ग",
+  "langaugeSetting": "भाषा सेटिङ्ग",
+  "themeToggle": "थिम टोगल"
 }
