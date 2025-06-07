@@ -20,10 +20,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: Text("Forgot Password"), centerTitle: true),
+      backgroundColor: AppColors.backgroundColor.lightModeColor,
+      appBar: AppBar(
+        title: Text("Forgot Password"),
+        centerTitle: true,
+        backgroundColor: AppColors.backgroundColor.lightModeColor,
+      ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -39,7 +43,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   hintText: 'Email',
-                  focusColor: AppColors.splashColor.darkModeColor,
+                  focusColor: AppColors.buttonColor.darkModeColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                     borderSide: BorderSide(),
@@ -55,27 +59,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             20.verticalSpace,
             SizedBox(
+              height: 50,
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
                   await _auth.sendPasswordResetLink(_emailController.text);
-                  // ScaffoldMessenger.of(context).showSnackBar(
-                  //   SnackBar(
-                  //     content: Text(
-                  //       "An email for password reset has been sent to your email",
-                  //     ),
-                  //   ),
-                  // );
-
                   if (_formKey.currentState!.validate()) {
                     // Validation passed → Navigate
-                    context.push(RouteName.verifyemailTemplateRoute);
+                    context.go(
+                      RouteName.verifyemailTemplateRoute,
+                      extra: _emailController.text,
+                    );
                   } else {
                     log('Form validation failed');
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.splashColor.darkModeColor,
+                  backgroundColor: AppColors.buttonColor.darkModeColor,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   shape: RoundedRectangleBorder(

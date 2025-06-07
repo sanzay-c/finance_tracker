@@ -72,25 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(_pages.length, _buildDot),
             ),
-
-            20.verticalSpace,
-
-            ElevatedButton(
-              onPressed: () {
-                if (_currentPage == _pages.length - 1) {
-                  widget.onFinish(); // leave onboarding
-                } else {
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeIn,
-                  );
-                }
-              },
-              child: Text(
-                _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
-              ),
-            ),
-            10.verticalSpace,
+            30.verticalSpace,
             CustomAuthButtons(),
             20.verticalSpace,
           ],
@@ -107,8 +89,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       decoration: BoxDecoration(
         color:
             _currentPage == index
-                ? AppColors.splashColor.darkModeColor
-                : AppColors.splashColor.lightModeColor,
+                ? AppColors.buttonColor.darkModeColor
+                : AppColors.buttonColor.lightModeColor,
         borderRadius: BorderRadius.circular(10),
       ),
     );

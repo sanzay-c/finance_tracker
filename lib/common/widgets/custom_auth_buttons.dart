@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 
 class CustomAuthButtons extends StatefulWidget {
   const CustomAuthButtons({super.key});
-
   @override
   State<CustomAuthButtons> createState() => _CustomAuthButtonsState();
 }
@@ -19,14 +18,14 @@ class _CustomAuthButtonsState extends State<CustomAuthButtons> {
     return Column(
       children: [
         SizedBox(
+          height: 50,
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              context.go(RouteName.signupTemplateRoute);
-              log("k vayo hau yesma bujhnai sakina");
+              context.push(RouteName.signupTemplateRoute);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.splashColor.darkModeColor,
+              backgroundColor: AppColors.buttonColor.darkModeColor,
               foregroundColor: AppColors.backgroundColor.lightModeColor,
               padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               shape: RoundedRectangleBorder(
@@ -39,16 +38,16 @@ class _CustomAuthButtonsState extends State<CustomAuthButtons> {
         10.verticalSpace,
         SizedBox(
           width: double.infinity,
-
+          height: 50,
           child: ElevatedButton(
             onPressed: () {
-              context.go(
+              context.push(
                 RouteName.loginTemplateRoute,
               ); //go-router package use garesi tyo route call garda yesari call garne hai
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.backgroundColor.lightModeColor,
-              foregroundColor: AppColors.splashColor.darkModeColor,
+              backgroundColor: AppColors.buttonColor.lightModeColor,
+              foregroundColor: AppColors.backgroundColor.lightModeColor,
               padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),

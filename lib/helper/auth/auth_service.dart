@@ -58,6 +58,7 @@ class AuthService {
       return cred.user;
     } on FirebaseAuthException catch (e) {
       exceptionHandler(e.code);
+      throw e; // RE-THROW so that caller knows!
     } catch (e, stackTrace) {
       log(
         'LoginError: $e',
@@ -65,8 +66,8 @@ class AuthService {
         error: e,
         stackTrace: stackTrace, // helpful for debugging
       );
+      throw e; // Optionally also throw here!
     }
-    return null;
   }
 
   //forgot password ko function

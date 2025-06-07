@@ -1,26 +1,72 @@
 import 'package:finance_tracker/features/email-verify/screens/email_verify_screen.dart';
 import 'package:finance_tracker/features/forgot-password/forgot_password_screen.dart';
 import 'package:finance_tracker/features/home/presentation/screens/homepage_screen.dart';
-import 'package:finance_tracker/features/login/presentation/screens/login_screen.dart';
-import 'package:finance_tracker/features/sign-up/presentation/screens/sign_up_screen.dart';
+import 'package:finance_tracker/features/login/data/datasource/auth_remote_datasource.dart';
+import 'package:finance_tracker/features/login/data/repository_impl/auth_repository_impl.dart';
+import 'package:finance_tracker/features/sign-up/data/datasource/auth_remote_datasource.dart';
+import 'package:finance_tracker/features/sign-up/data/repository_impl/auth_repository_impl.dart';
+import 'package:finance_tracker/features/login/domain/usecase/login_user_usecase.dart';
+import 'package:finance_tracker/features/login/presentation/cubit/cubit/login_cubit.dart';
+import 'package:finance_tracker/features/login/presentation/screen/login_screen.dart';
+import 'package:finance_tracker/features/sign-up/domain/usecase/signup_user_usecase.dart';
+import 'package:finance_tracker/features/sign-up/presentation/cubit/signup_cubit.dart';
+import 'package:finance_tracker/features/sign-up/presentation/screen/sign_up_screen.dart';
 import 'package:finance_tracker/features/wrapper/wrapper.dart';
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../custom_go_route.dart';
-import '../navigation_animation.dart';
 import '../route_name.dart';
 
 List<RouteBase> get authRouteList => <RouteBase>[
-  customGoRoute(path: RouteName.loginTemplateRoute, child: LoginScreen()),
-  customGoRoute(path: RouteName.signupTemplateRoute, child: SignUpScreen()),
+  // customGoRoute(path: RouteName.loginTemplateRoute, child: LoginScreen()),
+  // customGoRoute(path: RouteName.signupTemplateRoute, child: SignUpScreen()),
   customGoRoute(
     path: RouteName.forgotpassTemplateRoute,
     child: ForgotPasswordScreen(),
   ),
   customGoRoute(path: RouteName.homeTemplateRoute, child: HomepageScreen()),
   customGoRoute(path: RouteName.wrapperTemplateRoute, child: Wrapper()),
+
   customGoRoute(
     path: RouteName.verifyemailTemplateRoute,
-    child: EmailVerifyScreen(),
+    builder: (context, state) {
+      final email = state.extra as String;
+      return EmailVerifyScreen(email: email);
+    },
+  ),
+
+  customGoRoute(
+    path: RouteName.loginTemplateRoute,
+    builder: (context, state) {
+      return BlocProvider(
+        create:
+            (_) => LoginCubit(
+              LoginUserUseCase(
+                LoginAuthRepositoryImpl(
+                  LoginAuthRemoteDatasource(FirebaseAuth.instance),
+                ),
+              ),
+            ),
+        child: const LoginScreen(),
+      );
+    },
+  ),
+
+  customGoRoute(
+    path: RouteName.signupTemplateRoute,
+    builder: (context, state) {
+      return BlocProvider(
+        create:
+            (_) => SignupCubit(
+              SignupUserUsecase(
+                SignUpAuthRepositoryImpl(
+                  SignUpAuthRemoteDatasource(FirebaseAuth.instance),
+                ),
+              ),
+            ),
+        child: const SignUpScreen(),
+      );
+    },
   ),
 ];

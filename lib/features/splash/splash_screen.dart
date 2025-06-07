@@ -12,7 +12,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.splashColor.darkModeColor,
+      backgroundColor: AppColors.buttonColor.darkModeColor,
       body: Center(
         child: Text(
           "Monity",

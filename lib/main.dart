@@ -1,14 +1,7 @@
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
-import 'package:finance_tracker/core/routing/navigation_service.dart';
 import 'package:finance_tracker/core/routing/route_config.dart';
-import 'package:finance_tracker/core/routing/route_name.dart';
-import 'package:finance_tracker/features/forgot-password/forgot_password_screen.dart';
-import 'package:finance_tracker/features/home/presentation/screens/homepage_screen.dart';
-import 'package:finance_tracker/features/login/presentation/screens/login_screen.dart';
-import 'package:finance_tracker/features/sign-up/presentation/screens/sign_up_screen.dart';
-import 'package:finance_tracker/features/wrapper/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 Future<void> main() async {
@@ -81,7 +73,6 @@ class _MyAppState extends State<MyApp> {
                   routerConfig: router,
                   title: 'Expense Tracker',
 
-                  //yo maile ekxin lai comment handeko xu
                   locale: locale,
                   supportedLocales: const [Locale('en'), Locale('ne')],
                   localizationsDelegates: const [

@@ -7,7 +7,7 @@ int systemBackCount = 0;
 
 GoRoute customGoRoute<T>({
   required String path,
-  required Widget child,
+  Widget? child,
   GoRouterWidgetBuilder? builder,
   List<RouteBase>? routes,
   GlobalKey<NavigatorState>? parentNavigatorKey,
@@ -21,8 +21,19 @@ GoRoute customGoRoute<T>({
     parentNavigatorKey: parentNavigatorKey,
     pageBuilder:
         pageBuilder ??
-        (BuildContext context, GoRouterState state) {
-          return fadeTransition(context: context, state: state, child: child);
-        },
+        (builder == null
+            ? (BuildContext context, GoRouterState state) {
+              if (child == null) {
+                throw Exception(
+                  "Either builder or child must be provided for route $path",
+                );
+              }
+              return fadeTransition(
+                context: context,
+                state: state,
+                child: child,
+              );
+            }
+            : null),
   );
 }

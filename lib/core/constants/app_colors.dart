@@ -25,14 +25,9 @@ class AppColors {
   );
 
   static ColorModel buttonColor = ColorModel(
-    lightModeColor: const Color(0xFFF48BD4), // lighter pink
-    darkModeColor: const Color(0xFFE50ABA),
+    lightModeColor: const Color(0xFFE0BBFF), // Violet 100 - light violet
+    darkModeColor: const Color(0xFF9B59B6), // Darker violet for dark mode
   );
-
-  static ColorModel splashColor = ColorModel(
-  lightModeColor: const Color(0xFFE0BBFF), // Violet 100 - light violet
-  darkModeColor: const Color(0xFF9B59B6),  // Darker violet for dark mode
-);
 }
 
 extension ThemeContextExtension on BuildContext {

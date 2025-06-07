@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:finance_tracker/features/home/presentation/screens/homepage_screen.dart';
-import 'package:finance_tracker/features/login/presentation/screens/login_screen.dart';
+import 'package:finance_tracker/features/login/presentation/screen/login_screen.dart';
 import 'package:finance_tracker/features/onboardings/presentation/screens/onboarding_screen.dart';
 import 'package:finance_tracker/features/splash/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -70,13 +70,31 @@ class _WrapperState extends State<Wrapper> {
   }
 
   Future<void> _initializeApp() async {
+    try {
+      await Future.delayed(const Duration(seconds: 3));
+
+      final prefs = await SharedPreferences.getInstance();
+      final hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+
+      setState(() {
+        _showOnboarding = !hasSeenOnboarding;
+        _initialized = true;
+      });
+    } catch (e) {
+      // If any error happens, still initialize the app
+      log("InitializeApp Error: $e");
+      setState(() {
+        _showOnboarding = false;
+        _initialized = true;
+      });
+    }
     //Show splash for 3 seconds
-    await Future.delayed(const Duration(seconds: 3));
-    final prefs = await SharedPreferences.getInstance();
-    final hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
-    setState(() {
-      _showOnboarding = !hasSeenOnboarding;
-      _initialized = true;
-    });
+    // await Future.delayed(const Duration(seconds: 3));
+    // final prefs = await SharedPreferences.getInstance();
+    // final hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+    // setState(() {
+    //   _showOnboarding = !hasSeenOnboarding;
+    //   _initialized = true;
+    // });
   }
 }
