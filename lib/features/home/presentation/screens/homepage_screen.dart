@@ -72,6 +72,13 @@ class _HomepageScreenState extends State<HomepageScreen> {
             },
             child: Icon(Icons.logout),
           ),
+
+          ElevatedButton(
+            onPressed: () {
+              context.go(RouteName.addexpenseTemplateRoute);
+            },
+            child: Text("Add to firebase"),
+          ),
         ],
       ),
     );

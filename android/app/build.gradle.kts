@@ -17,6 +17,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        //for Java 8+ features
+       isCoreLibraryDesugaringEnabled = true
+
     }
 
     kotlinOptions {
@@ -54,4 +57,6 @@ dependencies{
     //yo chai firestore ani storage ko lagi ho hai
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+    //for local notification
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

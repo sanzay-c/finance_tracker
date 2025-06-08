@@ -1,6 +1,7 @@
 import 'dart:developer' show log;
 import 'package:finance_tracker/common/widgets/text_form_widget.dart';
 import 'package:finance_tracker/core/constants/app_colors.dart';
+import 'package:finance_tracker/core/constants/assets_source.dart';
 import 'package:finance_tracker/core/routing/route_name.dart';
 import 'package:finance_tracker/features/sign-up/presentation/cubit/signup_cubit.dart';
 import 'package:finance_tracker/helper/auth/auth_service.dart';
@@ -12,12 +13,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class SignUpWidget extends StatelessWidget {
-  final SignupState state; // Add this
+  final SignupState state;
 
-  SignUpWidget({
-    required this.state, // Constructor param
-    super.key,
-  });
+  SignUpWidget({required this.state, super.key});
 
   final _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
@@ -181,7 +179,7 @@ class SignUpWidget extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Image.asset(
-                          'assets/images/googlelogo.png',
+                          AssetsSource.googleLogo,
                           height: 50,
                           width: 50,
                         ),

@@ -1,5 +1,6 @@
 import 'package:finance_tracker/common/widgets/custom_auth_buttons.dart';
 import 'package:finance_tracker/core/constants/app_colors.dart';
+import 'package:finance_tracker/core/constants/assets_source.dart';
 import 'package:finance_tracker/features/onboardings/presentation/widget/onboarding_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,19 +20,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, String>> _pages = [
     {
-      "image": 'assets/images/onboarding1.png',
+      "image": AssetsSource.onboarding1,
       "title": "Gain total control\nof your money",
       "description":
           "Become your own money manager\nand make every rupees count",
     },
     {
-      "image": 'assets/images/onboarding2.png',
+      "image": AssetsSource.onboarding2,
       "title": "Knowing where your\n money goes ",
       "description":
           " Track your transaction easily,\nwith categories and financial report",
     },
     {
-      "image": 'assets/images/onboarding3.png',
+      "image": AssetsSource.onboarding3,
       "title": "  Planning ahead ",
       "description":
           " Setup your budget for each category\nso you stay in control",

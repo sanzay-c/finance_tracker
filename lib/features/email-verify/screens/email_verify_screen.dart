@@ -1,4 +1,5 @@
 import 'package:finance_tracker/core/constants/app_colors.dart';
+import 'package:finance_tracker/core/constants/assets_source.dart';
 import 'package:finance_tracker/core/routing/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,7 +18,7 @@ class EmailVerifyScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("assets/images/email_verify.png"),
+            Image.asset(AssetsSource.verifyEmail),
             10.verticalSpace,
             Text(
               "Your email is on the way!",
@@ -43,9 +44,7 @@ class EmailVerifyScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                child: Text(
-                  "Continue",
-                ), //yespaxi reset password ma pathauna parni thiyo accord
+                child: Text("Continue"),
               ),
             ),
           ],

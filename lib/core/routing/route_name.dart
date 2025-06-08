@@ -8,4 +8,6 @@ class RouteName {
   static const String mainhomeTemplateRoute = '/mainhome';
   static const String wrapperTemplateRoute = '/wrapper';
   static const String verifyemailTemplateRoute = '/verifyemail';
+  static const String addexpenseTemplateRoute = '/addexpense';
+  static const String receiptTemplateRoute = '/receipt';
 }

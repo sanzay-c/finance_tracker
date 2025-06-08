@@ -1,3 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/features/add-expense/data/repository_impl/expense_repository_impl.dart';
+import 'package:finance_tracker/features/add-expense/domain/usecase/add_expense_usecase.dart';
+import 'package:finance_tracker/features/add-expense/presentation/bloc/add_expense_bloc.dart';
+import 'package:finance_tracker/features/add-expense/presentation/screens/add_expense_screen.dart';
+import 'package:finance_tracker/features/add-expense/presentation/screens/receipt_screen.dart';
 import 'package:finance_tracker/features/email-verify/screens/email_verify_screen.dart';
 import 'package:finance_tracker/features/forgot-password/forgot_password_screen.dart';
 import 'package:finance_tracker/features/home/presentation/screens/homepage_screen.dart';
@@ -19,8 +25,6 @@ import '../custom_go_route.dart';
 import '../route_name.dart';
 
 List<RouteBase> get authRouteList => <RouteBase>[
-  // customGoRoute(path: RouteName.loginTemplateRoute, child: LoginScreen()),
-  // customGoRoute(path: RouteName.signupTemplateRoute, child: SignUpScreen()),
   customGoRoute(
     path: RouteName.forgotpassTemplateRoute,
     child: ForgotPasswordScreen(),
@@ -69,4 +73,21 @@ List<RouteBase> get authRouteList => <RouteBase>[
       );
     },
   ),
+
+  customGoRoute(
+    path: RouteName.addexpenseTemplateRoute,
+    builder: (context, state) {
+      return BlocProvider(
+        create:
+            (_) => AddExpenseBloc(
+              AddExpenseUseCase(
+                ExpenseRepositoryImpl(FirebaseFirestore.instance),
+              ),
+            ),
+        child: const AddExpenseScreen(),
+      );
+    },
+  ),
+
+  customGoRoute(path: RouteName.receiptTemplateRoute, child: ReceiptScreen()),
 ];
