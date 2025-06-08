@@ -1,15 +1,14 @@
-import 'package:finance_tracker/add_expense_screen.dart';
-import 'package:finance_tracker/common/features/add_transactions/add_transaction.dart';
-import 'package:finance_tracker/common/features/chart/chart_screen.dart';
-import 'package:finance_tracker/common/features/dashbord/presentation/dashboard_screen.dart';
+import 'package:finance_tracker/common/features/add_transactions/presentation/screens/add_transaction_screen.dart';
+import 'package:finance_tracker/common/features/chart/presentation/screens/chart_screen.dart';
+import 'package:finance_tracker/common/features/dashbord/presentation/screens/dashboard_screen.dart';
 import 'package:finance_tracker/common/features/profile/presentation/screens/profile_screen.dart';
-import 'package:finance_tracker/common/features/wallet/wallet_screen.dart';
+import 'package:finance_tracker/common/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class BottomNavBar extends StatelessWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  const BottomNavBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class BottomNavBar extends StatelessWidget {
       return [
         DashboardScreen(),
         ChartScreen(),
-        AddTransaction(),
+        AddTransactionScreen(),
         WalletScreen(),
         ProfileScreen(),
       ];

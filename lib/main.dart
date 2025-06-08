@@ -1,15 +1,33 @@
-import 'package:finance_tracker/add_expense_screen.dart';
-import 'package:finance_tracker/common/features/bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:finance_tracker/common/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //yo yedi web ma run vako xa vane
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: FirebaseOptions(
+        apiKey: "AIzaSyDuNxl8-nwVyS4n5S0_TRW1GUI2JcxTHOw",
+        authDomain: "flutter-firebase-implement.firebaseapp.com",
+        projectId: "flutter-firebase-implement",
+        storageBucket: "flutter-firebase-implement.firebasestorage.app",
+        messagingSenderId: "434484011784",
+        appId: "1:434484011784:web:e73b69545f9a5657c682bd",
+      ),
+    );
+  } // yo yedi android or ios ma run vako xa vane
+  else {
+    await Firebase.initializeApp();
+  }
   runApp(
     MultiBlocProvider(
       providers: [
