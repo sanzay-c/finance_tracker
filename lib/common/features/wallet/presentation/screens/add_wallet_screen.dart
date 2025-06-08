@@ -84,7 +84,7 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.upload, size: 20),
+                      Icon(Icons.file_upload_outlined, size: 20),
                       SizedBox(width: 8),
                       Text('Upload Image'),
                     ],
