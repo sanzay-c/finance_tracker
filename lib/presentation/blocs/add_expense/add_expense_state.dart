@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 
-abstract class AddExpenseState extends Equatable {
+abstract class ExpenseState extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
-class AddExpenseInitial extends AddExpenseState {}
+class ExpenseInitial extends ExpenseState {}
 
-class AddExpenseLoading extends AddExpenseState {}
+class ExpenseLoading extends ExpenseState {}
 
-class AddExpenseSuccess extends AddExpenseState {}
+class ExpenseSuccess extends ExpenseState {}
 
-class AddExpenseFailure extends AddExpenseState {
+class ExpenseFailure extends ExpenseState {
   final String error;
 
-  AddExpenseFailure(this.error);
+  ExpenseFailure(this.error);
 
   @override
   List<Object?> get props => [error];

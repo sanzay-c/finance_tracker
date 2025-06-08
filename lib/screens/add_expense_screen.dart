@@ -1,62 +1,99 @@
-// lib/presentation/screens/add_expense_screen.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/data/repositories/expense_repository_impl.dart';
 import 'package:finance_tracker/domain/entities/transaction_entity.dart';
 import 'package:finance_tracker/domain/usecases/add_expense_usecase.dart';
-
+import 'package:finance_tracker/domain/usecases/delete_expense_usecase.dart';
+import 'package:finance_tracker/domain/usecases/update_expense_usecase.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenseScreen extends StatefulWidget {
-  const AddExpenseScreen({super.key});
+  final TransactionEntity? existingTransaction;
+
+  const AddExpenseScreen({super.key, this.existingTransaction});
 
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
-  String selectedType = 'Expense';
-  DateTime selectedDate = DateTime.now();
+  late String selectedType;
+  late DateTime selectedDate;
   String selectedCategory = 'Bill & Utility';
   final categories = ['Bill & Utility', 'Food', 'Transport', 'Others'];
 
   final descriptionController = TextEditingController();
   final totalController = TextEditingController();
 
-  final AddExpenseUseCase useCase = AddExpenseUseCase(
-    ExpenseRepositoryImpl(FirebaseFirestore.instance),
-  );
+  final _repo = ExpenseRepositoryImpl(FirebaseFirestore.instance);
+  late final AddExpenseUseCase _addUseCase;
+  late final UpdateExpenseUseCase _updateUseCase;
+  late final DeleteExpenseUseCase _deleteUseCase;
 
-  void _saveTransaction() async {
+  bool get isEditing => widget.existingTransaction != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _addUseCase = AddExpenseUseCase(_repo);
+    _updateUseCase = UpdateExpenseUseCase(_repo);
+    _deleteUseCase = DeleteExpenseUseCase(_repo);
+
+    final existing = widget.existingTransaction;
+    selectedType = existing?.type ?? 'Expense';
+    selectedDate = existing?.date ?? DateTime.now();
+    selectedCategory = existing?.category ?? selectedCategory;
+    descriptionController.text = existing?.description ?? '';
+    totalController.text = existing?.total.toString() ?? '';
+  }
+
+  Future<void> _saveTransaction() async {
+    final amount = double.tryParse(totalController.text.trim());
+    if (amount == null) {
+      _showMessage("Enter a valid amount");
+      return;
+    }
+
+    final transaction = TransactionEntity(
+      id: widget.existingTransaction?.id,
+      type: selectedType,
+      date: selectedDate,
+      category: selectedType == 'Expense' ? selectedCategory : null,
+      description: descriptionController.text.trim(),
+      total: amount,
+    );
+
     try {
-      final double? amount = double.tryParse(totalController.text.trim());
-      if (amount == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Enter a valid amount")));
-        return;
+      if (isEditing) {
+        await _updateUseCase.execute(transaction.id!, transaction);
+        _showMessage("Transaction updated successfully!");
+      } else {
+        await _addUseCase.execute(transaction);
+        _showMessage("Transaction added successfully!");
       }
 
-      final transaction = TransactionEntity(
-        type: selectedType,
-        date: selectedDate,
-        category: selectedType == 'Expense' ? selectedCategory : null,
-        description: descriptionController.text.trim(),
-        total: amount,
-      );
-
-      await useCase.execute(transaction);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Transaction added successfully!")),
-      );
-
-      Navigator.pop(context); // or clear fields
+      Navigator.pop(context, true); // return true to refresh list
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
+      _showMessage("Error: ${e.toString()}");
     }
+  }
+
+  Future<void> _deleteTransaction() async {
+    if (!isEditing || widget.existingTransaction?.id == null) return;
+
+    try {
+      await _deleteUseCase.execute(widget.existingTransaction!.id!);
+      _showMessage("Transaction deleted successfully!");
+      Navigator.pop(context, true);
+    } catch (e) {
+      _showMessage("Error: ${e.toString()}");
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -82,13 +119,22 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       backgroundColor: backgroundColor,
       appBar: AppBar(
         title: Text(
-          'Add New $selectedType',
+          isEditing ? 'Edit ${selectedType}' : 'Add New $selectedType',
           style: TextStyle(color: btnTextColor),
         ),
         centerTitle: true,
         backgroundColor: backgroundColor,
         elevation: 0,
         leading: BackButton(color: btnTextColor),
+        actions:
+            isEditing
+                ? [
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: _deleteTransaction,
+                  ),
+                ]
+                : null,
       ),
       body: SafeArea(
         child: GestureDetector(
@@ -97,7 +143,6 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                // Toggle
                 Row(
                   children:
                       ['Expense', 'Income'].map((type) {
@@ -136,8 +181,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 ),
                 const SizedBox(height: 16),
                 selectedType == 'Expense'
-                    ? buildExpenseForm(cardColor, btnTextColor)
-                    : buildIncomeForm(cardColor, btnTextColor),
+                    ? buildExpenseForm(cardColor)
+                    : buildIncomeForm(cardColor),
                 const SizedBox(height: 20),
                 Row(
                   children: [
@@ -158,7 +203,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _saveTransaction,
-                        child: const Text('Save'),
+                        child: Text(isEditing ? 'Update' : 'Save'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: btnColor,
                           foregroundColor: btnTextColor,
@@ -178,7 +223,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  Widget buildExpenseForm(Color cardColor, Color btnTextColor) {
+  Widget buildExpenseForm(Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -187,9 +232,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         DropdownButtonFormField<String>(
           value: selectedCategory,
           items:
-              categories.map((category) {
-                return DropdownMenuItem(value: category, child: Text(category));
-              }).toList(),
+              categories
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category,
+                      child: Text(category),
+                    ),
+                  )
+                  .toList(),
           onChanged: (value) => setState(() => selectedCategory = value!),
           decoration: InputDecoration(
             filled: true,
@@ -205,7 +255,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
-  Widget buildIncomeForm(Color cardColor, Color btnTextColor) {
+  Widget buildIncomeForm(Color cardColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

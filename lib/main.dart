@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/data/repositories/expense_repository_impl.dart';
 import 'package:finance_tracker/domain/usecases/add_expense_usecase.dart';
+import 'package:finance_tracker/domain/usecases/delete_expense_usecase.dart';
+import 'package:finance_tracker/domain/usecases/update_expense_usecase.dart';
+import 'package:finance_tracker/homepage.dart';
 import 'package:finance_tracker/presentation/blocs/add_expense/add_expense_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +25,22 @@ void main() async {
   final expenseRepository = ExpenseRepositoryImpl(FirebaseFirestore.instance);
 
   final addExpenseUseCase = AddExpenseUseCase(expenseRepository);
+  final updateExpenseUseCase = UpdateExpenseUseCase(expenseRepository);
+  final deleteExpenseUseCase = DeleteExpenseUseCase(expenseRepository);
 
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => LanguageBloc()..add(LoadLanguageEvent())),
         BlocProvider(create: (_) => ThemeBloc()),
-        BlocProvider(create: (_) => AddExpenseBloc(addExpenseUseCase)),
+        BlocProvider(
+          create:
+              (_) => ExpenseBloc(
+                addExpenseUseCase: addExpenseUseCase,
+                updateExpenseUseCase: updateExpenseUseCase,
+                deleteExpenseUseCase: deleteExpenseUseCase,
+              ),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -70,7 +82,7 @@ class MyApp extends StatelessWidget {
                 brightness: Brightness.dark,
               ),
               debugShowCheckedModeBanner: false,
-              home: const AddExpenseScreen(),
+              home: const Homepage(),
             );
           },
         );

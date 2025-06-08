@@ -23,4 +23,24 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       throw Exception('Failed to save transaction: $e');
     }
   }
+
+  @override
+  Future<void> updateTransaction(
+    String id,
+    TransactionEntity transaction,
+  ) async {
+    final data = {
+      'type': transaction.type,
+      'date': transaction.date.toIso8601String(),
+      'category': transaction.category,
+      'description': transaction.description,
+      'total': transaction.total,
+    };
+    await firestore.collection('transactions').doc(id).update(data);
+  }
+
+  @override
+  Future<void> deleteTransaction(String id) async {
+    await firestore.collection('transactions').doc(id).delete();
+  }
 }
