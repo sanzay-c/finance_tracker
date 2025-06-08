@@ -1,8 +1,12 @@
 plugins {
+
     id("com.android.application")
+    id("org.jetbrains.kotlin.android") // yo maile add gareko
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // yo tala ko ekline code afaile add gareko ho hai uta firebase ko 
+    id ("com.google.gms.google-services")
 }
 
 android {
@@ -13,6 +17,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        //for Java 8+ features
+       isCoreLibraryDesugaringEnabled = true
+
     }
 
     kotlinOptions {
@@ -41,4 +48,15 @@ android {
 
 flutter {
     source = "../.."
+}
+
+//yo tala ko code haru aafai rakhni ho hai
+dependencies{
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-auth")
+    //yo chai firestore ani storage ko lagi ho hai
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    //for local notification
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
