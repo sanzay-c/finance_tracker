@@ -12,17 +12,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _formKey = GlobalKey<FormState>();
   String transactionType = 'Expense';
   String? selectedWallet;
+  String? selectedCategory; 
   DateTime selectedDate = DateTime(2024, 12, 11);
+  
 
   final TextEditingController amountController = TextEditingController(
     text: '0',
   );
   final TextEditingController descriptionController = TextEditingController();
 
+  final List<String> expenseCategories = [
+    'Food', 'Transportation', 'Entertainment', 'Shopping', 'Bills'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
         backgroundColor: getColorByTheme(
           context: context,
           colorClass: AppColors.backgroundColor,
@@ -54,6 +62,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   },
                   icon: Icon(Icons.keyboard_arrow_down),
                 ),
+
                 SizedBox(height: 20),
                 Text("Wallet"),
                 SizedBox(height: 8),
@@ -71,6 +80,29 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   },
                   icon: Icon(Icons.keyboard_arrow_down),
                 ),
+
+                SizedBox(height: 20),
+                Text("Expense Category"),
+                SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  value: selectedCategory,
+                  decoration: _inputDecoration(),
+                  hint: Text("Select Category"),
+                  items: expenseCategories.map((category) {
+                    return DropdownMenuItem(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() => selectedCategory = value);
+                  },
+                  icon: Icon(Icons.keyboard_arrow_down),
+                ),
+
+
+
+
                 SizedBox(height: 20),
                 Text("Date"),
                 SizedBox(height: 8),

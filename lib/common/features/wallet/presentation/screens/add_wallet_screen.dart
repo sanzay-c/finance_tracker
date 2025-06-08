@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:finance_tracker/common/features/wallet/presentation/bloc/bloc/add_wallet_bloc.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class AddWalletScreen extends StatefulWidget {
   const AddWalletScreen({super.key});
@@ -25,17 +29,34 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
     setState(() => _selectedImage = null);
   }
 
-  void _submitWallet() {
+  Future<String?> uploadImageToServer(File imageFile) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return "${DateTime.now().millisecondsSinceEpoch}";
+  }
+
+  Future<void> _submitWallet() async {
     final walletName = _walletController.text.trim();
     if (walletName.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Wallet name is required')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Wallet name is required'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
 
-    print('Wallet: $walletName');
-    print('Image path: ${_selectedImage?.path}');
+    String? uploadedImageUrl;
+
+    if (_selectedImage != null) {
+      uploadedImageUrl = await uploadImageToServer(_selectedImage!);
+    }
+
+    final id = const Uuid().v4();
+
+    context.read<AddWalletBloc>().add(
+      SubmitWalletEvent(id: id, name: walletName, imageUrl: uploadedImageUrl),
+    );
   }
 
   @override
@@ -46,102 +67,131 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
         colorClass: AppColors.backgroundColor,
       ),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
         backgroundColor: getColorByTheme(
           context: context,
           colorClass: AppColors.backgroundColor,
         ),
-        title: Text('New Wallet'),
+        title: const Text('New Wallet'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Wallet', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            TextField(
-              controller: _walletController,
-              decoration: InputDecoration(
-                hintText: 'Enter Wallet Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-
-            Text('Wallet Icon', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: 50,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black12),
-                  borderRadius: BorderRadius.circular(30),
+      body: BlocConsumer<AddWalletBloc, AddWalletState>(
+        listener: (context, state) {
+          if (state is AddWalletSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Wallet added successfully')),
+            );
+            Navigator.pop(context);
+          } else if (state is AddWalletError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+          }
+        },
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Wallet',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _walletController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter Wallet Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Wallet Icon',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black12),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.file_upload_outlined, size: 20),
+                          SizedBox(width: 8),
+                          Text('Upload Image'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (_selectedImage != null)
+                  Stack(
                     children: [
-                      Icon(Icons.file_upload_outlined, size: 20),
-                      SizedBox(width: 8),
-                      Text('Upload Image'),
+                      Container(
+                        height: 90,
+                        width: 90,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(12),
+                          image: DecorationImage(
+                            image: FileImage(_selectedImage!),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: GestureDetector(
+                          onTap: _removeImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 16),
-
-            if (_selectedImage != null)
-              Stack(
-                children: [
-                  Container(
-                    height: 90,
-                    width: 90,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(12),
-                      image: DecorationImage(
-                        image: FileImage(_selectedImage!),
-                        fit: BoxFit.cover,
-                      ),
+                const Spacer(),
+                ElevatedButton(
+                  onPressed: state is AddWalletLoading ? null : _submitWallet,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade700,
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: GestureDetector(
-                      onTap: _removeImage,
-                      child: Container(
-                        padding: EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black,
-                        ),
-                        child: Icon(Icons.close, color: Colors.white, size: 14),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-            const Spacer(),
-            ElevatedButton(
-              onPressed: _submitWallet,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey.shade700,
-                minimumSize: Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  child:
+                      state is AddWalletLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                            "Submit",
+                            style: TextStyle(color: Colors.white),
+                          ),
                 ),
-              ),
-              child: Text("Submit", style: TextStyle(color: Colors.white)),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

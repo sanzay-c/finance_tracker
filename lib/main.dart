@@ -1,4 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/common/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
+import 'package:finance_tracker/common/features/wallet/data/remote_data_source/wallet_remote_data_source.dart';
+import 'package:finance_tracker/common/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
+import 'package:finance_tracker/common/features/wallet/domain/usecases/add_wallet.dart';
+import 'package:finance_tracker/common/features/wallet/domain/usecases/get_wallet.dart';
+import 'package:finance_tracker/common/features/wallet/presentation/bloc/bloc/add_wallet_bloc.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
@@ -36,6 +42,25 @@ Future<void> main() async {
               (context) => LanguageBloc()..add(LoadLanguageEvent()), // Language
         ),
         BlocProvider(create: (context) => ThemeBloc()), // Theme
+        BlocProvider(
+          create:
+              (context) => AddWalletBloc(
+                addWallet: AddWallet(
+                  repository: WalletRepositoryImpl(
+                    remoteDataSource: WalletRemoteDataSource(
+                      firestore: FirebaseFirestore.instance,
+                    ),
+                  ),
+                ),
+                getWallets: GetWallets(
+                  repository: WalletRepositoryImpl(
+                    remoteDataSource: WalletRemoteDataSource(
+                      firestore: FirebaseFirestore.instance,
+                    ),
+                  ),
+                ),
+              ),
+        ),
       ],
       child: (const MyApp()),
     ),

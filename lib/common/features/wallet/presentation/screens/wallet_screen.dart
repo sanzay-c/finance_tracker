@@ -1,6 +1,10 @@
+import 'package:finance_tracker/common/features/wallet/presentation/bloc/bloc/add_wallet_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:finance_tracker/common/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:finance_tracker/common/features/wallet/presentation/screens/add_wallet_screen.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
-import 'package:flutter/material.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -10,18 +14,18 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  final List<Map<String, dynamic>> wallets = [
-    {'name': 'Wallet 1', 'amount': 1000.00},
-    {'name': 'Wallet 2', 'amount': 500.00},
-  ];
+  // Start with empty list, will update with state
+  List<WalletEntity> wallets = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger fetching wallets when screen loads
+    context.read<AddWalletBloc>().add(FetchWalletsEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
-    final totalBalance = wallets.fold<double>(
-      0,
-      (sum, wallet) => sum + (wallet['amount'] as double),
-    );
-
     return Scaffold(
       backgroundColor: getColorByTheme(
         context: context,
@@ -36,105 +40,180 @@ class _WalletScreenState extends State<WalletScreen> {
         automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 20),
-            Text(
-              'Rs.${totalBalance.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 4),
-            Text('Total Balance', style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 30),
+        child: BlocConsumer<AddWalletBloc, AddWalletState>(
+          listener: (context, state) {
+            if (state is AddWalletError) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+            }
+          },
+          builder: (context, state) {
+            if (state is GetWalletsLoaded) {
+              wallets = state.wallets;
+            } else if (state is AddWalletLoading) {
+              return Center(child: CircularProgressIndicator());
+            }
 
-            // Wallet card
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
+            // final totalBalance = wallets.fold<double>(
+            //   0,
+            //   (sum, wallet) => sum + (wallet.amount ?? 0),
+            // );
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                Text(
+                  // 'Rs.${totalBalance.toStringAsFixed(2)}',
+                  "Rs.1500",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
-
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                SizedBox(height: 4),
+                Text('Total Balance', style: TextStyle(color: Colors.grey)),
+                SizedBox(height: 30),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'My Wallets',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'My Wallets',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddWalletScreen(),
+                                  ),
+                                );
+                              },
+                              child: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: Colors.grey,
+                                child: Icon(Icons.add, color: Colors.white),
+                              ),
+                            ),
+                          ],
                         ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => AddWalletScreen()));
-                          },
-                          child: CircleAvatar(
-                            radius: 18,
-                            backgroundColor: Colors.grey,
-                            child: Icon(Icons.add, color: Colors.white),
+                        SizedBox(height: 20),
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: wallets.length,
+                            separatorBuilder: (_, __) => SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final wallet = wallets[index];
+                              return Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child:
+                                        wallet.imageUrl != null &&
+                                                wallet.imageUrl!.isNotEmpty
+                                            ? Image.network(
+                                              wallet.imageUrl!,
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                              loadingBuilder: (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null)
+                                                  return child;
+                                                return Container(
+                                                  height: 50,
+                                                  width: 50,
+                                                  color: Colors.grey.shade200,
+                                                  child: Center(
+                                                    child: CircularProgressIndicator(
+                                                      value:
+                                                          loadingProgress
+                                                                      .expectedTotalBytes !=
+                                                                  null
+                                                              ? loadingProgress
+                                                                      .cumulativeBytesLoaded /
+                                                                  loadingProgress
+                                                                      .expectedTotalBytes!
+                                                              : null,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              errorBuilder: (
+                                                context,
+                                                error,
+                                                stackTrace,
+                                              ) {
+                                                return Container(
+                                                  height: 50,
+                                                  width: 50,
+                                                  color: Colors.grey.shade300,
+                                                  child: Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.grey,
+                                                  ),
+                                                );
+                                              },
+                                            )
+                                            : Container(
+                                              height: 50,
+                                              width: 50,
+                                              color: Colors.grey.shade300,
+                                            ),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          wallet.name,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          // 'Rs.${(wallet.amount ?? 0).toStringAsFixed(2)}',
+                                          'Rs. 1000',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(Icons.arrow_forward_ios, size: 18),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
-
-                    // Wallet list
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: wallets.length,
-                        separatorBuilder: (_, __) => SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          final wallet = wallets[index];
-                          return Row(
-                            children: [
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      wallet['name'] as String,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Rs.${(wallet['amount'] as double).toStringAsFixed(2)}',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(Icons.arrow_forward_ios, size: 18),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
