@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finance_tracker/common/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:finance_tracker/common/features/wallet/presentation/screens/add_wallet_screen.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -14,13 +15,11 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  // Start with empty list, will update with state
   List<WalletEntity> wallets = [];
 
   @override
   void initState() {
     super.initState();
-    // Trigger fetching wallets when screen loads
     context.read<AddWalletBloc>().add(FetchWalletsEvent());
   }
 
@@ -63,15 +62,15 @@ class _WalletScreenState extends State<WalletScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 20),
+                20.verticalSpace,
                 Text(
                   // 'Rs.${totalBalance.toStringAsFixed(2)}',
                   "Rs.1500",
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 4),
+                4.verticalSpace,
                 Text('Total Balance', style: TextStyle(color: Colors.grey)),
-                SizedBox(height: 30),
+                30.verticalSpace,
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -105,14 +104,14 @@ class _WalletScreenState extends State<WalletScreen> {
                                 );
                               },
                               child: CircleAvatar(
-                                radius: 18,
+                                radius: 18.r,
                                 backgroundColor: Colors.grey,
                                 child: Icon(Icons.add, color: Colors.white),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
+                        20.verticalSpace,
                         Expanded(
                           child: ListView.separated(
                             itemCount: wallets.length,
@@ -128,8 +127,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                                 wallet.imageUrl!.isNotEmpty
                                             ? Image.network(
                                               wallet.imageUrl!,
-                                              height: 50,
-                                              width: 50,
+                                              height: 50.h,
+                                              width: 50.w,
                                               fit: BoxFit.cover,
                                               loadingBuilder: (
                                                 context,
@@ -139,8 +138,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                                 if (loadingProgress == null)
                                                   return child;
                                                 return Container(
-                                                  height: 50,
-                                                  width: 50,
+                                                  height: 50.h,
+                                                  width: 50.w,
                                                   color: Colors.grey.shade200,
                                                   child: Center(
                                                     child: CircularProgressIndicator(
@@ -163,8 +162,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                                 stackTrace,
                                               ) {
                                                 return Container(
-                                                  height: 50,
-                                                  width: 50,
+                                                  height: 50.h,
+                                                  width: 50.w,
                                                   color: Colors.grey.shade300,
                                                   child: Icon(
                                                     Icons.broken_image,
@@ -174,12 +173,12 @@ class _WalletScreenState extends State<WalletScreen> {
                                               },
                                             )
                                             : Container(
-                                              height: 50,
-                                              width: 50,
+                                              height: 50.h,
+                                              width: 50.w,
                                               color: Colors.grey.shade300,
                                             ),
                                   ),
-                                  SizedBox(width: 12),
+                                  12.verticalSpace,
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -192,7 +191,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                             fontSize: 16,
                                           ),
                                         ),
-                                        SizedBox(height: 4),
+                                        4.verticalSpace,
                                         Text(
                                           // 'Rs.${(wallet.amount ?? 0).toStringAsFixed(2)}',
                                           'Rs. 1000',

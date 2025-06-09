@@ -4,6 +4,7 @@ import 'package:finance_tracker/common/features/wallet/presentation/bloc/bloc/ad
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
@@ -90,7 +91,7 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
         },
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -98,7 +99,7 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                   'Wallet',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                8.verticalSpace,
                 TextField(
                   controller: _walletController,
                   decoration: const InputDecoration(
@@ -106,12 +107,12 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 20),
+                20.verticalSpace,
                 const Text(
                   'Wallet Icon',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                8.verticalSpace,
                 GestureDetector(
                   onTap: _pickImage,
                   child: Container(
@@ -133,13 +134,13 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                16.verticalSpace,
                 if (_selectedImage != null)
                   Stack(
                     children: [
                       Container(
-                        height: 90,
-                        width: 90,
+                        height: 90.h,
+                        width: 90.w,
                         decoration: BoxDecoration(
                           color: Colors.grey.shade300,
                           borderRadius: BorderRadius.circular(12),
@@ -160,10 +161,10 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                               shape: BoxShape.circle,
                               color: Colors.black,
                             ),
-                            child: const Icon(
+                            child:  Icon(
                               Icons.close,
                               color: Colors.white,
-                              size: 14,
+                              size: 14.sp,
                             ),
                           ),
                         ),

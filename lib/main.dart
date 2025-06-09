@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 Future<void> main() async {
@@ -77,37 +78,43 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeBloc, ThemeState>(
-      builder: (context, themeState) {
-        return BlocBuilder<LanguageBloc, LanguageState>(
-          builder: (context, state) {
-            Locale locale = const Locale('en');
-            if (state is LanguageChanged) {
-              locale = state.locale;
-            }
-            return MaterialApp(
-              navigatorKey: navigatorKey,
-              title: 'Expense Tracker',
-              locale: locale,
-              supportedLocales: const [Locale('en'), Locale('ne')],
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                AppLocalizations.delegate,
-              ],
+    return ScreenUtilInit(
+      designSize: Size(720, 1280),
+      minTextAdapt: true,
+      builder: (context, child) {
+        return BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, themeState) {
+            return BlocBuilder<LanguageBloc, LanguageState>(
+              builder: (context, state) {
+                Locale locale = const Locale('en');
+                if (state is LanguageChanged) {
+                  locale = state.locale;
+                }
+                return MaterialApp(
+                  navigatorKey: navigatorKey,
+                  title: 'Expense Tracker',
+                  locale: locale,
+                  supportedLocales: const [Locale('en'), Locale('ne')],
+                  localizationsDelegates: const [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                    AppLocalizations.delegate,
+                  ],
 
-              themeMode: themeState.themeMode,
-              theme: ThemeData(
-                textTheme: GoogleFonts.poppinsTextTheme(),
-                brightness: Brightness.light,
-              ),
-              darkTheme: ThemeData(
-                textTheme: GoogleFonts.poppinsTextTheme(),
-                brightness: Brightness.dark,
-              ),
-              debugShowCheckedModeBanner: false,
-              home: BottomNavBar(),
+                  themeMode: themeState.themeMode,
+                  theme: ThemeData(
+                    textTheme: GoogleFonts.poppinsTextTheme(),
+                    brightness: Brightness.light,
+                  ),
+                  darkTheme: ThemeData(
+                    textTheme: GoogleFonts.poppinsTextTheme(),
+                    brightness: Brightness.dark,
+                  ),
+                  debugShowCheckedModeBanner: false,
+                  home: BottomNavBar(),
+                );
+              },
             );
           },
         );

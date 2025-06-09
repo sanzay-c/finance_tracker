@@ -4,6 +4,7 @@ import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.da
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileSettingScreen extends StatefulWidget {
@@ -55,11 +56,11 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
         title: Text(l10.profileSetting),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 24),
+            24.verticalSpace,
             Text(
               l10.langaugeSetting,
               style: TextStyle(
@@ -71,7 +72,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 8,),
+            8.verticalSpace,
             SwitchListTile(
               title: Text(_isNepaliSelected ? 'Nepali' : 'English'),
               value: _isNepaliSelected,
@@ -96,12 +97,12 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
               inactiveThumbColor: Colors.grey,
             ),
 
-            const SizedBox(height: 24),
+            24.verticalSpace,
 
             Text(
               l10.themeToggle,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
                 color: getColorByTheme(
                   context: context,
@@ -109,7 +110,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            8.verticalSpace,
             SwitchListTile(
               title: Text(_isDarkTheme ? 'Dark Theme' : 'Light Theme'),
               value: _isDarkTheme,
