@@ -1,45 +1,66 @@
-import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
-import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
-import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/features/expense/data/repositories/expense_repository_impl.dart';
+import 'package:finance_tracker/features/expense/domain/usecases/add_expense_usecase.dart';
+import 'package:finance_tracker/features/expense/domain/usecases/delete_expense_usecase.dart';
+import 'package:finance_tracker/features/expense/domain/usecases/update_expense_usecase.dart';
 import 'package:finance_tracker/homepage.dart';
+import 'package:finance_tracker/features/expense/presentation/blocs/add_expense/add_expense_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+import 'package:finance_tracker/features/expense/screens/add_expense_screen.dart';
+import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
+import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  final expenseRepository = ExpenseRepositoryImpl(FirebaseFirestore.instance);
+
+  final addExpenseUseCase = AddExpenseUseCase(expenseRepository);
+  final updateExpenseUseCase = UpdateExpenseUseCase(expenseRepository);
+  final deleteExpenseUseCase = DeleteExpenseUseCase(expenseRepository);
+
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => LanguageBloc()..add(LoadLanguageEvent())),
+        BlocProvider(create: (_) => ThemeBloc()),
         BlocProvider(
-          create: (context) => LanguageBloc()..add(LoadLanguageEvent()), // Language
+          create:
+              (_) => ExpenseBloc(
+                addExpenseUseCase: addExpenseUseCase,
+                updateExpenseUseCase: updateExpenseUseCase,
+                deleteExpenseUseCase: deleteExpenseUseCase,
+              ),
         ),
-        BlocProvider(create: (context) => ThemeBloc()), // Theme 
       ],
-      child: (const MyApp()),
+      child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeState>(
       builder: (context, themeState) {
         return BlocBuilder<LanguageBloc, LanguageState>(
-          builder: (context, state) {
+          builder: (context, langState) {
             Locale locale = const Locale('en');
-            if (state is LanguageChanged) {
-              locale = state.locale;
+            if (langState is LanguageChanged) {
+              locale = langState.locale;
             }
+
             return MaterialApp(
               navigatorKey: navigatorKey,
               title: 'Expense Tracker',
@@ -51,7 +72,6 @@ class _MyAppState extends State<MyApp> {
                 GlobalCupertinoLocalizations.delegate,
                 AppLocalizations.delegate,
               ],
-              
               themeMode: themeState.themeMode,
               theme: ThemeData(
                 textTheme: GoogleFonts.poppinsTextTheme(),
@@ -62,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                 brightness: Brightness.dark,
               ),
               debugShowCheckedModeBanner: false,
-              home: Homepage(),
+              home: const Homepage(),
             );
           },
         );
@@ -70,5 +90,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-

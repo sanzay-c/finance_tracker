@@ -1,6 +1,30 @@
 {
-  "title":"hello",
-  "helloWorld":"Hello World",
-  "greetings":"geetings",
-  "expenseTracker":"Expense Tracker"
+  "title": "hello",
+  "helloWorld": "Hello World",
+  "greetings": "Greetings",
+  "expenseTracker": "Expense Tracker",
+  "transactionReceipts": "Transaction Receipts",
+  "@transactionReceipts": {
+    "description": "Title for the receipts screen"
+  },
+  "all": "All",
+  "income": "Income",
+  "expense": "Expense",
+  "updateTransaction": "Update Transaction",
+  "type": "Type",
+  "category": "Category",
+  "description": "Description",
+  "amount": "Amount",
+  "cancel": "Cancel",
+  "update": "Update",
+  "addNew": "Add New",
+  "save": "Save",
+  "deleteUseCaseNotInitialized": "DeleteUseCase not initialized",
+  "transactionDeleted": "Transaction deleted",
+  "failedToDelete": "Failed to delete: {error}",
+  "updateUseCaseNotInitialized": "UpdateUseCase not initialized",
+  "transactionUpdated": "Transaction updated",
+  "failedToUpdate": "Failed to update: {error}",
+  "somethingWentWrong": "Enter a valid amount",
+  "noReceiptsFound": "No {type} receipts found."
 }

@@ -1,6 +1,30 @@
 {
- "title": "नमस्ते",
- "helloWorld": "नमस्ते संसार",
- "greetings": "नमस्कार",
- "expenseTracker": "खर्च ट्रैकर"
+  "title": "नमस्ते",
+  "helloWorld": "नमस्ते संसार",
+  "greetings": "नमस्कार",
+  "expenseTracker": "खर्च ट्रैकर",
+  "transactionReceipts": "लेनदेन रसीदहरू",
+  "@transactionReceipts": {
+    "description": "रसीद स्क्रिनको शीर्षक"
+  },
+  "all": "सबै",
+  "income": "आय",
+  "expense": "खर्च",
+  "updateTransaction": "लेनदेन अपडेट गर्नुहोस्",
+  "type": "प्रकार",
+  "category": "श्रेणी",
+  "description": "विवरण",
+  "amount": "रकम",
+  "cancel": "रद्द गर्नुहोस्",
+  "update": "अपडेट गर्नुहोस्",
+  "addNew": "नयाँ थप्नुहोस्",
+  "save": "सेभ गर्नुहोस्",
+  "deleteUseCaseNotInitialized": "DeleteUseCase आरम्भ गरिएको छैन",
+  "transactionDeleted": "लेनदेन मेटाइयो",
+  "failedToDelete": "मेटाउन असफल: {error}",
+  "updateUseCaseNotInitialized": "UpdateUseCase आरम्भ गरिएको छैन",
+  "transactionUpdated": "लेनदेन सफलतापूर्वक थपियो!",
+  "failedToUpdate": "अपडेट गर्न असफल: {error}",
+  "somethingWentWrong": "सही रकम प्रविष्ट गर्नुहोस्",
+  "noReceiptsFound": "{type} रसीदहरू फेला परेनन्।"
 }

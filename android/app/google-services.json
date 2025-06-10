@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "629166795948",
+    "project_id": "appp-fd4fb",
+    "storage_bucket": "appp-fd4fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629166795948:android:48134b59d64ad174740309",
+        "android_client_info": {
+          "package_name": "com.example.finance_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI8024izpljA_HGR32F07nD8yaDYDy9Vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
