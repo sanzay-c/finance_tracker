@@ -44,8 +44,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             16.verticalSpace,
 
-            Text("Profile Holder Name", style: TextStyle(fontSize: 24, color: getColorByTheme(context: context, colorClass: AppColors.profileTextColor))),
-            16.verticalSpace,
+            Text("Sanjay", style: TextStyle(fontSize: 24, color: getColorByTheme(context: context, colorClass: AppColors.profileTextColor))),
+            24.verticalSpace,
             ProfileItemWidget(
               icon: Icons.person,
               text: l10.editProfile,

@@ -82,7 +82,6 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Wallet added successfully')),
             );
-            Navigator.pop(context);
           } else if (state is AddWalletError) {
             ScaffoldMessenger.of(
               context,

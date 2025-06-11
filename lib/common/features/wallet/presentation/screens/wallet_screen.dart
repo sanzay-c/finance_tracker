@@ -54,22 +54,27 @@ class _WalletScreenState extends State<WalletScreen> {
               return Center(child: CircularProgressIndicator());
             }
 
-            // final totalBalance = wallets.fold<double>(
-            //   0,
-            //   (sum, wallet) => sum + (wallet.amount ?? 0),
-            // );
+            final totalBalance = wallets.fold<double>(
+              0,
+              (sum, wallet) => sum + (wallet.amount),
+            );
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 20.verticalSpace,
                 Text(
-                  // 'Rs.${totalBalance.toStringAsFixed(2)}',
-                  "Rs.1500",
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  'Rs.${totalBalance.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontSize: 80.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 4.verticalSpace,
-                Text('Total Balance', style: TextStyle(color: Colors.grey)),
+                Text(
+                  'Total Balance',
+                  style: TextStyle(color: Colors.grey, fontSize: 40.sp),
+                ),
                 30.verticalSpace,
                 Expanded(
                   child: Container(
@@ -91,7 +96,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               'My Wallets',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: 32.sp,
                               ),
                             ),
                             InkWell(
@@ -104,7 +109,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                 );
                               },
                               child: CircleAvatar(
-                                radius: 18.r,
+                                radius: 24.r,
                                 backgroundColor: Colors.grey,
                                 child: Icon(Icons.add, color: Colors.white),
                               ),
@@ -121,64 +126,65 @@ class _WalletScreenState extends State<WalletScreen> {
                               return Row(
                                 children: [
                                   ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(10.r),
                                     child:
                                         wallet.imageUrl != null &&
                                                 wallet.imageUrl!.isNotEmpty
                                             ? Image.network(
-                                              wallet.imageUrl!,
-                                              height: 50.h,
-                                              width: 50.w,
-                                              fit: BoxFit.cover,
-                                              loadingBuilder: (
-                                                context,
-                                                child,
-                                                loadingProgress,
-                                              ) {
-                                                if (loadingProgress == null)
-                                                  return child;
-                                                return Container(
-                                                  height: 50.h,
-                                                  width: 50.w,
-                                                  color: Colors.grey.shade200,
-                                                  child: Center(
-                                                    child: CircularProgressIndicator(
-                                                      value:
-                                                          loadingProgress
-                                                                      .expectedTotalBytes !=
-                                                                  null
-                                                              ? loadingProgress
-                                                                      .cumulativeBytesLoaded /
-                                                                  loadingProgress
-                                                                      .expectedTotalBytes!
-                                                              : null,
+                                                wallet.imageUrl!,
+                                            height: 110.h,
+                                                width: 130.w,
+                                                fit: BoxFit.cover,
+                                                loadingBuilder: (
+                                                  context,
+                                                  child,
+                                                  loadingProgress,
+                                                ) {
+                                                  if (loadingProgress == null)
+                                                    return child;
+                                                  return Container(
+                                                height: 110.h,
+                                                width: 130.w,
+                                                    color: Colors.grey.shade200,
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value: loadingProgress
+                                                                    .expectedTotalBytes !=
+                                                                null
+                                                            ? loadingProgress
+                                                                    .cumulativeBytesLoaded /
+                                                                loadingProgress
+                                                                    .expectedTotalBytes!
+                                                            : null,
+                                                      ),
                                                     ),
-                                                  ),
-                                                );
-                                              },
-                                              errorBuilder: (
-                                                context,
-                                                error,
-                                                stackTrace,
-                                              ) {
-                                                return Container(
-                                                  height: 50.h,
-                                                  width: 50.w,
-                                                  color: Colors.grey.shade300,
-                                                  child: Icon(
-                                                    Icons.broken_image,
-                                                    color: Colors.grey,
-                                                  ),
-                                                );
-                                              },
-                                            )
+                                                  );
+                                                },
+                                                errorBuilder: (
+                                                  context,
+                                                  error,
+                                                  stackTrace,
+                                                ) {
+                                                  return Container(
+                                                  height: 110.h,
+                                                width: 130.w,
+                                                    color: Colors.grey.shade300,
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  );
+                                                },
+                                              )
                                             : Container(
-                                              height: 50.h,
-                                              width: 50.w,
-                                              color: Colors.grey.shade300,
-                                            ),
+                                                height: 110.h,
+                                                width: 130.w,
+                                                color: Colors.grey.shade300,
+                                              ),
                                   ),
-                                  12.verticalSpace,
+
+                                  12.horizontalSpace,
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -193,8 +199,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                         ),
                                         4.verticalSpace,
                                         Text(
-                                          // 'Rs.${(wallet.amount ?? 0).toStringAsFixed(2)}',
-                                          'Rs. 1000',
+                                          'Rs.${wallet.amount.toStringAsFixed(2)}',
                                           style: TextStyle(color: Colors.grey),
                                         ),
                                       ],

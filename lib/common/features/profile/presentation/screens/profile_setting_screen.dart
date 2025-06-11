@@ -64,7 +64,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
             Text(
               l10.langaugeSetting,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 32.sp,
                 fontWeight: FontWeight.bold,
                 color: getColorByTheme(
                   context: context,
@@ -102,7 +102,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
             Text(
               l10.themeToggle,
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 32.sp,
                 fontWeight: FontWeight.bold,
                 color: getColorByTheme(
                   context: context,

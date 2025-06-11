@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:finance_tracker/common/features/add_transactions/domain/usecases/wallet_total_income.dart';
 import 'package:finance_tracker/common/features/wallet/domain/entities/wallet_entity.dart';
 import 'package:finance_tracker/common/features/wallet/domain/usecases/add_wallet.dart';
 import 'package:finance_tracker/common/features/wallet/domain/usecases/get_wallet.dart';
@@ -13,8 +14,13 @@ part 'add_wallet_state.dart';
 class AddWalletBloc extends Bloc<AddWalletEvent, AddWalletState> {
   final AddWallet addWallet;
   final GetWallets getWallets;
-  AddWalletBloc({required this.addWallet, required this.getWallets})
-    : super(AddWalletInitial()) {
+  final WalletTotalIncome walletTotalIncome;
+
+  AddWalletBloc({
+    required this.addWallet,
+    required this.getWallets,
+    required this.walletTotalIncome,
+  }) : super(AddWalletInitial()) {
     on<SubmitWalletEvent>(_onSubmitWalletEvent);
     on<FetchWalletsEvent>(_onFetchWalletsEvent);
   }
@@ -34,14 +40,27 @@ class AddWalletBloc extends Bloc<AddWalletEvent, AddWalletState> {
       emit(AddWalletSuccess(wallet));
     } catch (e) {
       emit(AddWalletError(errorMessage: 'Error While Adding Wallet: $e'));
-    } 
+    }
   }
 
-  FutureOr<void> _onFetchWalletsEvent(FetchWalletsEvent event, Emitter<AddWalletState> emit) async {
-     try {
+  FutureOr<void> _onFetchWalletsEvent(
+    FetchWalletsEvent event,
+    Emitter<AddWalletState> emit,
+  ) async {
+    try {
       emit(AddWalletLoading());
+
       final wallets = await getWallets();
-      emit(GetWalletsLoaded(wallets));
+
+      List<WalletEntity> walletsWithAmounts = [];
+
+      for (var wallet in wallets) {
+        final totalAmount = await walletTotalIncome(wallet.id);
+        final walletWithAmount = wallet.copyWith(amount: totalAmount);
+        walletsWithAmounts.add(walletWithAmount);
+      }
+
+      emit(GetWalletsLoaded(walletsWithAmounts));
     } catch (e) {
       emit(AddWalletError(errorMessage: 'Failed to fetch wallets: $e'));
     }

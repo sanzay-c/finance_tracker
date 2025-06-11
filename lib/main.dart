@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/common/features/add_transactions/data/data_remote_source/transaction_remote_data_source.dart';
+import 'package:finance_tracker/common/features/add_transactions/data/repo_impl/transaction_repo_impl.dart';
+import 'package:finance_tracker/common/features/add_transactions/domain/usecases/wallet_total_income.dart';
 import 'package:finance_tracker/common/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
 import 'package:finance_tracker/common/features/wallet/data/remote_data_source/wallet_remote_data_source.dart';
 import 'package:finance_tracker/common/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
@@ -46,6 +49,13 @@ Future<void> main() async {
         BlocProvider(
           create:
               (context) => AddWalletBloc(
+                walletTotalIncome: WalletTotalIncome(
+                  repository: TransactionRepositoryImpl(
+                    remoteDataSource: TransactionRemoteDataSourceImpl(
+                      firestore: FirebaseFirestore.instance,
+                    ),
+                  ),
+                ),
                 addWallet: AddWallet(
                   repository: WalletRepositoryImpl(
                     remoteDataSource: WalletRemoteDataSource(
