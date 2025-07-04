@@ -1,5 +1,5 @@
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:finance_tracker/l10n/app_localizations.dart';
 
 AppLocalizations get l10 {
   final context = navigatorKey.currentContext;

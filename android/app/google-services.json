@@ -1,95 +1,26 @@
 {
   "project_info": {
-    "project_number": "434484011784",
-    "project_id": "flutter-firebase-implement",
-    "storage_bucket": "flutter-firebase-implement.firebasestorage.app"
+    "project_number": "161343463628",
+    "project_id": "personal-finance-tracker-6f0a1",
+    "storage_bucket": "personal-finance-tracker-6f0a1.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:434484011784:android:fb5ba071d815b566c682bd",
+        "mobilesdk_app_id": "1:161343463628:android:26510219db515b483b2269",
         "android_client_info": {
           "package_name": "com.example.finance_tracker"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "434484011784-c2sadap6brh5i4remltj8qs0bih0p9gk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.finance_tracker",
-            "certificate_hash": "673c5786e13da18f3db5e57ba693d168b95f7881"
-          }
-        },
-        {
-          "client_id": "434484011784-pt38g9nuiijs6et5gbvj44acavj1kpr0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA0ob3iBHVBq1E2IM8gHpc-hfeZwA2HAOs"
+          "current_key": "AIzaSyAEciXfpOruC2g6Ziad8z5Woi9sdRHB-Wg"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "434484011784-pt38g9nuiijs6et5gbvj44acavj1kpr0.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "434484011784-p044a46lhq5vsafckh4qrhj6oh800aui.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.firebaseImplementation"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:434484011784:android:1ddd4d3c3695ebf3c682bd",
-        "android_client_info": {
-          "package_name": "com.example.firebase_implementation"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "434484011784-4vcm4g4ajhc1v8esq8a88tnv0no9ompg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.firebase_implementation",
-            "certificate_hash": "673c5786e13da18f3db5e57ba693d168b95f7881"
-          }
-        },
-        {
-          "client_id": "434484011784-pt38g9nuiijs6et5gbvj44acavj1kpr0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA0ob3iBHVBq1E2IM8gHpc-hfeZwA2HAOs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "434484011784-pt38g9nuiijs6et5gbvj44acavj1kpr0.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "434484011784-p044a46lhq5vsafckh4qrhj6oh800aui.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.firebaseImplementation"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -1,22 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finance_tracker/common/features/add_transactions/data/data_remote_source/transaction_remote_data_source.dart';
-import 'package:finance_tracker/common/features/add_transactions/data/repo_impl/transaction_repo_impl.dart';
-import 'package:finance_tracker/common/features/add_transactions/domain/usecases/wallet_total_income.dart';
-import 'package:finance_tracker/common/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
-import 'package:finance_tracker/common/features/wallet/data/remote_data_source/wallet_remote_data_source.dart';
-import 'package:finance_tracker/common/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
-import 'package:finance_tracker/common/features/wallet/domain/usecases/add_wallet.dart';
-import 'package:finance_tracker/common/features/wallet/domain/usecases/get_wallet.dart';
-import 'package:finance_tracker/common/features/wallet/presentation/bloc/bloc/add_wallet_bloc.dart';
+import 'package:finance_tracker/features/auth/signup/signup.dart';
+import 'package:finance_tracker/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
+import 'package:finance_tracker/features/wallet/data/remote_data_source/wallet_remote_data_source.dart';
+import 'package:finance_tracker/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
+import 'package:finance_tracker/features/wallet/domain/usecases/add_wallet.dart';
+import 'package:finance_tracker/features/wallet/domain/usecases/get_wallet.dart';
+import 'package:finance_tracker/features/wallet/domain/usecases/wallet_total_income.dart';
+import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:finance_tracker/core/global_data/language_bloc/bloc/language_bloc.dart';
+import 'package:finance_tracker/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -49,13 +48,7 @@ Future<void> main() async {
         BlocProvider(
           create:
               (context) => AddWalletBloc(
-                walletTotalIncome: WalletTotalIncome(
-                  repository: TransactionRepositoryImpl(
-                    remoteDataSource: TransactionRemoteDataSourceImpl(
-                      firestore: FirebaseFirestore.instance,
-                    ),
-                  ),
-                ),
+
                 addWallet: AddWallet(
                   repository: WalletRepositoryImpl(
                     remoteDataSource: WalletRemoteDataSource(
@@ -69,7 +62,7 @@ Future<void> main() async {
                       firestore: FirebaseFirestore.instance,
                     ),
                   ),
-                ),
+                ), 
               ),
         ),
       ],
@@ -122,7 +115,7 @@ class _MyAppState extends State<MyApp> {
                     brightness: Brightness.dark,
                   ),
                   debugShowCheckedModeBanner: false,
-                  home: BottomNavBar(),
+                  home: SignUpScreen(),
                 );
               },
             );
