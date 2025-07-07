@@ -176,7 +176,8 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                       context: context,
                       initialDate: selectedDate,
                       firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
+                      lastDate: DateTime.now(),
+                      barrierColor: const Color.fromARGB(81, 0, 0, 0),
                     );
                     if (pickedDate != null) {
                       setState(() => selectedDate = pickedDate);
