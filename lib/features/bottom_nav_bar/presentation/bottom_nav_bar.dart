@@ -14,17 +14,15 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0; // Tracks the selected tab
+  int _selectedIndex = 0; 
 
-  // List of all 4 screens for the navigation bar
   static const List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(), // Index 0 (Home)
-    ChartScreen(), // Index 1 (Chart)
-    WalletScreen(), // Index 2 (Wallet)
-    ProfileScreen(), // Index 3 (Profile)
+    DashboardScreen(), 
+    ChartScreen(), 
+    WalletScreen(), 
+    ProfileScreen(), 
   ];
 
-  // This function is called when a nav bar icon is tapped
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -34,10 +32,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // The body will display the screen corresponding to the selected index
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
 
-      // This is our main "Add" button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to the Add Transaction Screen
@@ -47,8 +43,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         },
         backgroundColor:  Color(
           0xFF48319D,
-        ), // Dark purple color from your UI
-        shape:  CircleBorder(), // Ensures it's perfectly round
+        ),
+        shape:  CircleBorder(), 
         child:  Icon(Icons.add, color: Colors.white, size: 30),
       ),
 
@@ -57,14 +53,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
       // This is our custom bottom navigation bar
       bottomNavigationBar: BottomAppBar(
-        color:  getColorByTheme(context: context, colorClass: AppColors.backgroundColor), // Light gray color from your UI
+        color:  getColorByTheme(context: context, colorClass: AppColors.backgroundColor), 
         shape:
-             CircularNotchedRectangle(), // Creates the cutout for the FAB
-        notchMargin: 8.0, // The space around the notch
+             CircularNotchedRectangle(), 
+        notchMargin: 8.0, 
         child: SizedBox(
           height: 60.0,
           child: Row(
-            // Use spaceAround to distribute the icons evenly
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               // LEFT ICONS (Home and Chart)
