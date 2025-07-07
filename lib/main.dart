@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/features/auth/signup/signup.dart';
 import 'package:finance_tracker/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
+import 'package:finance_tracker/features/dashbord/presentation/bloc/dashboard_bloc.dart';
 import 'package:finance_tracker/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:finance_tracker/features/wallet/data/remote_data_source/wallet_remote_data_source.dart';
 import 'package:finance_tracker/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
@@ -46,6 +47,7 @@ Future<void> main() async {
               (context) => LanguageBloc()..add(LoadLanguageEvent()), // Language
         ),
         BlocProvider(create: (context) => ThemeBloc()), // Theme
+        BlocProvider(create: (context) => DashboardBloc(),),
         BlocProvider(
           create:
               (context) => AddWalletBloc(
