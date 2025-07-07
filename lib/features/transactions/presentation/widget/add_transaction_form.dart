@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
+import 'package:finance_tracker/features/transactions/domain/entities/transaction_entity.dart';
+import 'package:finance_tracker/features/transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:finance_tracker/features/wallet/data/models/wallet_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddTransactionForm extends StatefulWidget {
   const AddTransactionForm({super.key});
@@ -14,7 +19,9 @@ class AddTransactionFormState extends State<AddTransactionForm> {
   String? selectedWalletId;
   String? selectedCategory;
   DateTime selectedDate = DateTime.now();
-  final TextEditingController amountController = TextEditingController(text: '0');
+  final TextEditingController amountController = TextEditingController(
+    text: '0',
+  );
   final TextEditingController descriptionController = TextEditingController();
 
   final List<Map<String, String>> expenseCategories = [
@@ -30,164 +37,240 @@ class AddTransactionFormState extends State<AddTransactionForm> {
     {'id': '2', 'name': 'Bank'},
   ];
 
+  List<WalletModel> walletList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchWallets();
+  }
+
+  Future<void> fetchWallets() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('wallets').get();
+    final wallets =
+        snapshot.docs.map((doc) {
+          final data = doc.data();
+          return WalletModel.fromMap(data);
+        }).toList();
+
+    setState(() {
+      walletList = wallets;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: getColorByTheme(
-        context: context,
-        colorClass: AppColors.backgroundColor,
-      ),
-      appBar: AppBar(
+    return BlocListener<TransactionBloc, TransactionState>(
+      listener: (context, state) {
+        if (state is TransactionSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Transaction added successfully")),
+          );
+        } else if (state is TransactionFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Error: ${state.error}")));
+        }
+      },
+      child: Scaffold(
         backgroundColor: getColorByTheme(
           context: context,
           colorClass: AppColors.backgroundColor,
         ),
-        title: Text("Add Transaction"),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Text("Type"),
-              DropdownButtonFormField<String>(
-                dropdownColor: getColorByTheme(
-                  context: context,
-                  colorClass: AppColors.backgroundColor,
-                ),
-                value: transactionType,
-                decoration: _inputDecoration(),
-                items: ['Expense', 'Income']
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (value) => setState(() => transactionType = value!),
-              ),
-              SizedBox(height: 20),
-              Text("Wallet"),
-              DropdownButtonFormField<String>(
-                dropdownColor: getColorByTheme(
-                  context: context,
-                  colorClass: AppColors.backgroundColor,
-                ),
-                value: selectedWalletId,
-                decoration: _inputDecoration(),
-                hint: Text("Select Wallet"),
-                items: wallets.map((wallet) {
-                  return DropdownMenuItem<String>(
-                    value: wallet['id'],
-                    child: Text(wallet['name']!),
-                  );
-                }).toList(),
-                onChanged: (value) => setState(() => selectedWalletId = value),
-              ),
-              SizedBox(height: 20),
-              Text("Expense Category"),
-              DropdownButtonFormField<String>(
-                dropdownColor: getColorByTheme(
-                  context: context,
-                  colorClass: AppColors.backgroundColor,
-                ),
-                value: selectedCategory,
-                decoration: _inputDecoration(),
-                hint: Text("Select Category"),
-                items: expenseCategories.map((category) {
-                  return DropdownMenuItem<String>(
-                    value: category['category'],
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          category['image']!,
-                          width: 24,
-                          height: 24,
-                        ),
-                        SizedBox(width: 10),
-                        Text(category['category']!),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                onChanged: transactionType == 'Expense'
-                    ? (value) => setState(() => selectedCategory = value)
-                    : null,
-              ),
-              SizedBox(height: 20),
-              Text("Date"),
-              GestureDetector(
-                onTap: () async {
-                  final pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: selectedDate,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                  );
-                  if (pickedDate != null) {
-                    setState(() => selectedDate = pickedDate);
-                  }
-                },
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    decoration: _inputDecoration(),
-                    controller: TextEditingController(
-                      text: "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Text("Amount"),
-              TextFormField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                decoration: _inputDecoration(),
-              ),
-              SizedBox(height: 20),
-              Text("Description (optional)"),
-              TextFormField(
-                controller: descriptionController,
-                maxLines: 3,
-                decoration: _inputDecoration(),
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: getColorByTheme(
+        appBar: AppBar(
+          backgroundColor: getColorByTheme(
+            context: context,
+            colorClass: AppColors.backgroundColor,
+          ),
+          title: const Text("Add Transaction"),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                const Text("Type"),
+                DropdownButtonFormField<String>(
+                  dropdownColor: getColorByTheme(
                     context: context,
                     colorClass: AppColors.backgroundColor,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  value: transactionType,
+                  decoration: _inputDecoration(),
+                  items:
+                      ['Expense', 'Income']
+                          .map(
+                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                          )
+                          .toList(),
+                  onChanged:
+                      (value) => setState(() => transactionType = value!),
+                ),
+                const SizedBox(height: 20),
+                const Text("Wallet"),
+                DropdownButtonFormField<String>(
+                  value: selectedWalletId,
+                  dropdownColor: getColorByTheme(
+                    context: context,
+                    colorClass: AppColors.backgroundColor,
                   ),
-                  padding: EdgeInsets.symmetric(
-                    vertical: 13,
-                    horizontal: 32,
+                  decoration: _inputDecoration(),
+                  hint: const Text("Select Wallet"),
+                  items:
+                      walletList.map((wallet) {
+                        return DropdownMenuItem<String>(
+                          value: wallet.id,
+                          child: Text(wallet.name),
+                        );
+                      }).toList(),
+                  onChanged:
+                      (value) => setState(() => selectedWalletId = value),
+                  validator:
+                      (value) =>
+                          value == null ? 'Please select a wallet' : null,
+                ),
+                const SizedBox(height: 20),
+                const Text("Expense Category"),
+                DropdownButtonFormField<String>(
+                  dropdownColor: getColorByTheme(
+                    context: context,
+                    colorClass: AppColors.backgroundColor,
                   ),
-                  elevation: 15,
-                  side: BorderSide(
-                    color: const Color.fromARGB(255, 0, 0, 0),
-                    width: 2,
+                  value: selectedCategory,
+                  decoration: _inputDecoration(),
+                  hint: const Text("Select Category"),
+                  items:
+                      expenseCategories.map((category) {
+                        return DropdownMenuItem<String>(
+                          value: category['category'],
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                category['image']!,
+                                width: 24,
+                                height: 24,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(category['category']!),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                  onChanged:
+                      transactionType == 'Expense'
+                          ? (value) => setState(() => selectedCategory = value)
+                          : null,
+                  validator:
+                      transactionType == 'Expense'
+                          ? (value) =>
+                              value == null ? 'Please select a category' : null
+                          : null,
+                ),
+                const SizedBox(height: 20),
+                const Text("Date"),
+                GestureDetector(
+                  onTap: () async {
+                    final pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: selectedDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100),
+                    );
+                    if (pickedDate != null) {
+                      setState(() => selectedDate = pickedDate);
+                    }
+                  },
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      decoration: _inputDecoration(),
+                      controller: TextEditingController(
+                        text:
+                            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+                      ),
+                    ),
                   ),
                 ),
-                child: Text(
-                  'Submit',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                const SizedBox(height: 20),
+                const Text("Amount"),
+                TextFormField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDecoration(),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) return 'Enter amount';
+                    if (double.tryParse(value) == null) return 'Invalid number';
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                const Text("Description (optional)"),
+                TextFormField(
+                  controller: descriptionController,
+                  maxLines: 3,
+                  decoration: _inputDecoration(),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: _submitTransaction,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.backgroundColor,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 32,
+                    ),
+                    elevation: 15,
+                    side: const BorderSide(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      width: 2,
+                    ),
+                  ),
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
+  void _submitTransaction() {
+    if (_formKey.currentState!.validate()) {
+      final transaction = TransactionEntity(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: transactionType.toLowerCase(),
+        walletId: selectedWalletId!,
+        category: transactionType == 'Expense' ? selectedCategory : null,
+        date: selectedDate,
+        amount: double.tryParse(amountController.text) ?? 0.0,
+        description:
+            descriptionController.text.trim().isEmpty
+                ? null
+                : descriptionController.text.trim(),
+      );
+
+      context.read<TransactionBloc>().add(AddTransactionEvent(transaction));
+    }
+  }
+
   InputDecoration _inputDecoration() {
     return InputDecoration(
-      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
     );
   }
