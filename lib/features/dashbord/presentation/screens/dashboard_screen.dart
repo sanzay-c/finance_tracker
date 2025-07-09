@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/dashbord/presentation/bloc/dashboard_bloc.dart';
+import 'package:finance_tracker/features/dashbord/presentation/bloc/fetch_transaction_bloc.dart';
+import 'package:finance_tracker/features/dashbord/presentation/screens/all_transactions_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     fetchUserName();
     context.read<DashboardBloc>().add(FetchDashboardDataEvent());
-
+    context.read<FetchTransactionBloc>().add(FetchTransactionsEvent());
   }
 
   Future<void> fetchUserName() async {
@@ -199,73 +201,133 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   "Transactions",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                Text("View all", style: TextStyle(color: Colors.grey.shade600)),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AllTransactionsScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "View all",
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                ),
               ],
             ),
 
             SizedBox(height: 10),
 
             Expanded(
-              child: ListView.builder(
-                itemCount: 6,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(bottom: 10),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 45,
-                          width: 45,
+              child: BlocBuilder<FetchTransactionBloc, FetchTransactionState>(
+                builder: (context, state) {
+                  if (state is FetchTransactionLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is FetchTransactionLoaded) {
+                    final transactions = state.transactions;
+                    if (transactions.isEmpty) {
+                      return Center(child: Text("No transactions found."));
+                    }
+
+                    return ListView.builder(
+                      itemCount: transactions.length,
+                      itemBuilder: (context, index) {
+                        final txn = transactions[index];
+                        final isIncome = txn.type == 'income';
+                        final sign = isIncome ? "+" : "-";
+                        final amountText =
+                            "$sign Rs. ${txn.amount.toStringAsFixed(2)}";
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade600,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
                             children: [
-                              Text(
-                                "Clothing",
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                "winter clothing",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                              Container(
+                                height: 45,
+                                width: 45,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade600,
+                                  borderRadius: BorderRadius.circular(10),
+                                  image:
+                                      txn.category != null
+                                          ? DecorationImage(
+                                            image: NetworkImage(
+                                              // Provide the image URL if exists
+                                              "https://your-image-source/${txn.category}.png",
+                                            ),
+                                            fit: BoxFit.cover,
+                                          )
+                                          : null,
                                 ),
+                                child:
+                                    txn.category == null
+                                        ? Icon(
+                                          Icons.category,
+                                          color: Colors.white,
+                                        )
+                                        : null,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      txn.category ?? "No Category",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      txn.description ?? "No description",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    amountText,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          isIncome ? Colors.green : Colors.red,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    // Format date to a user-friendly string, e.g. "11 Dec"
+                                    "${txn.date.day} ${_monthAbbreviation(txn.date.month)}",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "- Rs. 20",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 2),
-                            Text(
-                              "11 Dec", // for date 
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
+                        );
+                      },
+                    );
+                  } else if (state is FetchTransactionError) {
+                    return Center(child: Text(state.message));
+                  } else {
+                    return const SizedBox();
+                  }
                 },
               ),
             ),
@@ -274,4 +336,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+}
+
+String _monthAbbreviation(int month) {
+  const months = [
+    "", // to make index 1-based
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  ];
+  return months[month];
 }

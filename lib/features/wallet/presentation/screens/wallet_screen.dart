@@ -51,10 +51,7 @@ class _WalletScreenState extends State<WalletScreen> {
         automaticallyImplyLeading: false,
         actions: [
           // Add a refresh button for testing
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchWallets,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchWallets),
         ],
       ),
       body: SafeArea(
@@ -62,13 +59,14 @@ class _WalletScreenState extends State<WalletScreen> {
           listener: (context, state) {
             if (state is AddWalletError) {
               print('❌ Error: ${state.errorMessage}');
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.errorMessage)));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
             }
           },
           builder: (context, state) {
             print('🏗️ Building with state: ${state.runtimeType}');
-            
+
             if (state is AddWalletLoading) {
               print('⏳ Loading...');
               return const Center(child: CircularProgressIndicator());
@@ -111,12 +109,18 @@ class _WalletScreenState extends State<WalletScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
+                      border: Border(
+                        top: BorderSide(color: Colors.black), 
+                        left: BorderSide.none,
+                        right: BorderSide.none,
+                        bottom: BorderSide.none, 
+                      ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20),
                       ),
                     ),
+
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,88 +150,123 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                         20.verticalSpace,
                         Expanded(
-                          child: wallets.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    'No wallets added yet',
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                )
-                              : ListView.separated(
-                                  itemCount: wallets.length,
-                                  separatorBuilder: (_, __) => const SizedBox(height: 16),
-                                  itemBuilder: (context, index) {
-                                    final wallet = wallets[index];
-                                    return Row(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(10.r),
-                                          child: wallet.imageUrl != null && wallet.imageUrl!.isNotEmpty
-                                              ? Image.network(
-                                                  wallet.imageUrl!,
-                                                  height: 110.h,
-                                                  width: 130.w,
-                                                  fit: BoxFit.cover,
-                                                  loadingBuilder:
-                                                      (context, child, loadingProgress) {
-                                                    if (loadingProgress == null) return child;
-                                                    return Container(
+                          child:
+                              wallets.isEmpty
+                                  ? const Center(
+                                    child: Text(
+                                      'No wallets added yet',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  )
+                                  : ListView.separated(
+                                    itemCount: wallets.length,
+                                    separatorBuilder:
+                                        (_, __) => const SizedBox(height: 16),
+                                    itemBuilder: (context, index) {
+                                      final wallet = wallets[index];
+                                      return Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              10.r,
+                                            ),
+                                            child:
+                                                wallet.imageUrl != null &&
+                                                        wallet
+                                                            .imageUrl!
+                                                            .isNotEmpty
+                                                    ? Image.network(
+                                                      wallet.imageUrl!,
                                                       height: 110.h,
                                                       width: 130.w,
-                                                      color: Colors.grey.shade200,
-                                                      child: Center(
-                                                        child: CircularProgressIndicator(
-                                                          value: loadingProgress.expectedTotalBytes != null
-                                                              ? loadingProgress.cumulativeBytesLoaded /
-                                                                  loadingProgress.expectedTotalBytes!
-                                                              : null,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  errorBuilder: (context, error, stackTrace) {
-                                                    return Container(
+                                                      fit: BoxFit.cover,
+                                                      loadingBuilder: (
+                                                        context,
+                                                        child,
+                                                        loadingProgress,
+                                                      ) {
+                                                        if (loadingProgress ==
+                                                            null)
+                                                          return child;
+                                                        return Container(
+                                                          height: 110.h,
+                                                          width: 130.w,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade200,
+                                                          child: Center(
+                                                            child: CircularProgressIndicator(
+                                                              value:
+                                                                  loadingProgress
+                                                                              .expectedTotalBytes !=
+                                                                          null
+                                                                      ? loadingProgress
+                                                                              .cumulativeBytesLoaded /
+                                                                          loadingProgress
+                                                                              .expectedTotalBytes!
+                                                                      : null,
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      errorBuilder: (
+                                                        context,
+                                                        error,
+                                                        stackTrace,
+                                                      ) {
+                                                        return Container(
+                                                          height: 110.h,
+                                                          width: 130.w,
+                                                          color:
+                                                              Colors
+                                                                  .grey
+                                                                  .shade300,
+                                                          child: const Icon(
+                                                            Icons.broken_image,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        );
+                                                      },
+                                                    )
+                                                    : Container(
                                                       height: 110.h,
                                                       width: 130.w,
-                                                      color: Colors.grey.shade300,
-                                                      child: const Icon(
-                                                        Icons.broken_image,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    );
-                                                  },
-                                                )
-                                              : Container(
-                                                  height: 110.h,
-                                                  width: 130.w,
-                                                  color: Colors.grey.shade300,
-                                                ),
-                                        ),
-                                        12.horizontalSpace,
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                wallet.name,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              4.verticalSpace,
-                                              Text(
-                                                'Rs.${wallet.amount.toStringAsFixed(2)}',
-                                                style: const TextStyle(color: Colors.grey),
-                                              ),
-                                            ],
+                                                      color:
+                                                          Colors.grey.shade300,
+                                                    ),
                                           ),
-                                        ),
-                                        const Icon(Icons.arrow_forward_ios, size: 18),
-                                      ],
-                                    );
-                                  },
-                                ),
+                                          12.horizontalSpace,
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  wallet.name,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                4.verticalSpace,
+                                                Text(
+                                                  'Rs.${wallet.amount.toStringAsFixed(2)}',
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 18,
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                         ),
                       ],
                     ),

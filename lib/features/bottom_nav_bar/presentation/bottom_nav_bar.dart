@@ -53,12 +53,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
       // This is our custom bottom navigation bar
       bottomNavigationBar: BottomAppBar(
-        color:  getColorByTheme(context: context, colorClass: AppColors.backgroundColor), 
-        shape:
-             CircularNotchedRectangle(), 
+        color: const Color.fromARGB(162, 200, 197, 197),
+        // getColorByTheme(context: context, colorClass: AppColors.backgroundColor), 
+        shape:CircularNotchedRectangle(), 
         notchMargin: 8.0, 
         child: SizedBox(
-          height: 60.0,
+          // height: 60.0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
