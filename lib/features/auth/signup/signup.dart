@@ -94,18 +94,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: getColorByTheme(context: context, colorClass: AppColors.backgroundColor),
+      backgroundColor: getColorByTheme(
+        context: context,
+        colorClass: AppColors.backgroundColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Positioned(child: DarkModeSwitch()),
+
             Text(
               'Sign Up',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: getColorByTheme(
+                  context: context,
+                  colorClass: AppColors.textColor,
+                ),
+              ),
             ),
             SizedBox(height: 32),
             TextField(
+              style: TextStyle(
+                color: getColorByTheme(
+                  context: context,
+                  colorClass: AppColors.textColor,
+                ),
+              ),
               controller: _fullNameController,
               decoration: InputDecoration(
                 labelText: 'Enter fullname',
@@ -118,6 +136,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             SizedBox(height: 16),
             TextField(
+              style: TextStyle(
+                color: getColorByTheme(
+                  context: context,
+                  colorClass: AppColors.textColor,
+                ),
+              ),
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Enter email',
@@ -135,6 +159,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 return TextField(
                   controller: _passwordController,
                   obscureText: obscureText,
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
                   decoration: InputDecoration(
                     labelText: 'Enter password',
                     hintText: 'Enter password',
@@ -148,7 +178,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.pinkAccent, width: 2),
+                      borderSide: BorderSide(
+                        color: Colors.pinkAccent,
+                        width: 2,
+                      ),
                     ),
                   ),
                 );
@@ -162,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   _signUp(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pinkAccent,
+                  backgroundColor: Color(0xFF48319D),
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -181,22 +214,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   TextSpan(
                     text: "Already have an account ?",
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: getColorByTheme(
+                        context: context,
+                        colorClass: AppColors.textColor,
+                      ),
+                    ),
                   ),
                   TextSpan(
                     text: ' Login',
                     style: TextStyle(
-                      color: Colors.pinkAccent,
+                      color: Color(0xFF48319D),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        );
-                      },
+                    recognizer:
+                        TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ),
+                            );
+                          },
                   ),
                 ],
               ),

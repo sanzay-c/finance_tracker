@@ -14,13 +14,13 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0; 
+  int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    DashboardScreen(), 
-    ChartScreen(), 
-    WalletScreen(), 
-    ProfileScreen(), 
+    DashboardScreen(),
+    ChartScreen(),
+    WalletScreen(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -37,15 +37,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to the Add Transaction Screen
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) =>  AddTransactionScreen()),
-          );
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => AddTransactionScreen()));
         },
-        backgroundColor:  Color(
-          0xFF48319D,
-        ),
-        shape:  CircleBorder(), 
-        child:  Icon(Icons.add, color: Colors.white, size: 30),
+        backgroundColor: Color(0xFF48319D),
+        shape: CircleBorder(),
+        child: Icon(Icons.add, color: Colors.white, size: 30),
       ),
 
       // Position the FloatingActionButton in the center, docked to the BottomAppBar
@@ -53,10 +51,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
       // This is our custom bottom navigation bar
       bottomNavigationBar: BottomAppBar(
-        color: const Color.fromARGB(162, 200, 197, 197),
-        // getColorByTheme(context: context, colorClass: AppColors.backgroundColor), 
-        shape:CircularNotchedRectangle(), 
-        notchMargin: 8.0, 
+        color: getColorByTheme(
+          context: context,
+          colorClass: AppColors.bottomNavColor,
+        ),
+        shape: CircularNotchedRectangle(),
+        notchMargin: 8.0,
         child: SizedBox(
           // height: 60.0,
           child: Row(
@@ -69,16 +69,20 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     icon: Icon(
                       Icons.home_filled,
                       color:
-                          _selectedIndex == 0 ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 71, 70, 70),
+                          _selectedIndex == 0
+                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
+                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
                     ),
                     onPressed: () => _onItemTapped(0),
                   ),
-                   SizedBox(width: 30),
+                  SizedBox(width: 30),
                   IconButton(
                     icon: Icon(
                       Icons.bar_chart_rounded,
                       color:
-                          _selectedIndex == 1 ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 71, 70, 70),
+                          _selectedIndex == 1
+                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
+                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
                     ),
                     onPressed: () => _onItemTapped(1),
                   ),
@@ -86,7 +90,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               ),
 
               // This SizedBox creates the empty space in the middle
-               SizedBox(width: 40),
+              SizedBox(width: 40),
 
               // RIGHT ICONS (Wallet and Profile)
               Row(
@@ -95,16 +99,20 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     icon: Icon(
                       Icons.wallet_rounded,
                       color:
-                          _selectedIndex == 2 ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 71, 70, 70),
+                          _selectedIndex == 2
+                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
+                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
                     ),
                     onPressed: () => _onItemTapped(2),
                   ),
-                   SizedBox(width: 30),
+                  SizedBox(width: 30),
                   IconButton(
                     icon: Icon(
                       Icons.person_outline,
                       color:
-                          _selectedIndex == 3 ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 71, 70, 70),
+                          _selectedIndex == 3
+                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
+                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
                     ),
                     onPressed: () => _onItemTapped(3),
                   ),

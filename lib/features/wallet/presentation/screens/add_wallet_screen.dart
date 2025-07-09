@@ -88,7 +88,10 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
         listener: (context, state) {
           if (state is AddWalletSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Wallet added successfully')),
+              const SnackBar(content: Text('Wallet added successfully'), 
+              behavior: SnackBarBehavior.floating,
+              
+              ),
             );
             Navigator.pop(context, true);
           } else if (state is AddWalletError) {
@@ -104,9 +107,15 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Wallet',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
                 ),
                 8.verticalSpace,
                 TextField(
@@ -117,9 +126,15 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                   ),
                 ),
                 20.verticalSpace,
-                const Text(
+                Text(
                   'Wallet Icon',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
                 ),
                 8.verticalSpace,
                 GestureDetector(
@@ -128,16 +143,24 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     height: 50,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black12),
+                      border: Border.all(color: getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide)),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.file_upload_outlined, size: 20),
                           SizedBox(width: 8),
-                          Text('Upload Image'),
+                          Text(
+                            'Upload Image',
+                            style: TextStyle(
+                              color: getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.textColor,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -184,19 +207,32 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                 ElevatedButton(
                   onPressed: state is AddWalletLoading ? null : _submitWallet,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade700,
-                    minimumSize: const Size.fromHeight(50),
+                    backgroundColor: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.backgroundColor,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 13,
+                      horizontal: 32,
+                    ),
+                    elevation: 15,
+                    minimumSize: const Size.fromHeight(50),
+                    side:  BorderSide(
+                      color: getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
+                      width: 2,
                     ),
                   ),
-                  child:
-                      state is AddWalletLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                            "Submit",
-                            style: TextStyle(color: Colors.white),
-                          ),
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: getColorByTheme(context: context, colorClass: AppColors.textColor)
+                    ),
+                  ),
                 ),
               ],
             ),

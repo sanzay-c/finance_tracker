@@ -3,6 +3,7 @@ import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/transactions/domain/entities/transaction_entity.dart';
 import 'package:finance_tracker/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:finance_tracker/features/wallet/data/models/wallet_model.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -91,7 +92,15 @@ class AddTransactionFormState extends State<AddTransactionForm> {
             key: _formKey,
             child: ListView(
               children: [
-                const Text("Type"),
+                Text(
+                  "Type",
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
+                ),
                 DropdownButtonFormField<String>(
                   dropdownColor: getColorByTheme(
                     context: context,
@@ -102,14 +111,33 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                   items:
                       ['Expense', 'Income']
                           .map(
-                            (e) => DropdownMenuItem(value: e, child: Text(e)),
+                            (e) => DropdownMenuItem(
+                              value: e,
+                              child: Text(
+                                e,
+                                style: TextStyle(
+                                  color: getColorByTheme(
+                                    context: context,
+                                    colorClass: AppColors.textColor,
+                                  ),
+                                ),
+                              ),
+                            ),
                           )
                           .toList(),
                   onChanged:
                       (value) => setState(() => transactionType = value!),
                 ),
                 const SizedBox(height: 20),
-                const Text("Wallet"),
+                Text(
+                  "Wallet",
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
+                ),
                 DropdownButtonFormField<String>(
                   value: selectedWalletId,
                   dropdownColor: getColorByTheme(
@@ -122,7 +150,15 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                       walletList.map((wallet) {
                         return DropdownMenuItem<String>(
                           value: wallet.id,
-                          child: Text(wallet.name),
+                          child: Text(
+                            wallet.name,
+                            style: TextStyle(
+                              color: getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.textColor,
+                              ),
+                            ),
+                          ),
                         );
                       }).toList(),
                   onChanged:
@@ -132,7 +168,15 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                           value == null ? 'Please select a wallet' : null,
                 ),
                 const SizedBox(height: 20),
-                const Text("Expense Category"),
+                Text(
+                  "Expense Category",
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
+                ),
                 DropdownButtonFormField<String>(
                   dropdownColor: getColorByTheme(
                     context: context,
@@ -153,7 +197,15 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                                 height: 24,
                               ),
                               const SizedBox(width: 10),
-                              Text(category['category']!),
+                              Text(
+                                category['category']!,
+                                style: TextStyle(
+                                  color: getColorByTheme(
+                                    context: context,
+                                    colorClass: AppColors.textColor,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -169,7 +221,15 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                           : null,
                 ),
                 const SizedBox(height: 20),
-                const Text("Date"),
+                Text(
+                  "Date",
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () async {
                     final pickedDate = await showDatePicker(
@@ -185,6 +245,12 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                   },
                   child: AbsorbPointer(
                     child: TextFormField(
+                      style: TextStyle(
+                        color: getColorByTheme(
+                          context: context,
+                          colorClass: AppColors.textColor,
+                        ),
+                      ),
                       decoration: _inputDecoration(),
                       controller: TextEditingController(
                         text:
@@ -194,8 +260,22 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text("Amount"),
+                Text(
+                  "Amount",
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
+                ),
                 TextFormField(
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
                   controller: amountController,
                   keyboardType: TextInputType.number,
                   decoration: _inputDecoration(),
@@ -206,7 +286,15 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const Text("Description (optional)"),
+                Text(
+                  "Description (optional)",
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
+                ),
                 TextFormField(
                   controller: descriptionController,
                   maxLines: 3,
@@ -228,17 +316,17 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                       horizontal: 32,
                     ),
                     elevation: 15,
-                    side: const BorderSide(
-                      color: Color.fromARGB(255, 0, 0, 0),
+                    side:  BorderSide(
+                      color: getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
                       width: 2,
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Submit',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: getColorByTheme(context: context, colorClass: AppColors.textColor)
                     ),
                   ),
                 ),

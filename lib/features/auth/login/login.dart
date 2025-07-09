@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'package:finance_tracker/core/constants/app_color.dart';
+import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finance_tracker/features/auth/services/auth_service.dart';
 import 'package:finance_tracker/features/auth/signup/signup.dart';
@@ -103,12 +105,14 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Positioned(child: DarkModeSwitch()),
             Text(
               'Login',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
             ),
             SizedBox(height: 32),
             TextField(
+              style: TextStyle(color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Enter email',
@@ -125,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 return TextField(
                   controller: _passwordController,
                   obscureText: obscureText,
+              style: TextStyle(color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
                   decoration: InputDecoration(
                     labelText: 'Enter password',
                     hintText: 'Enter password',
@@ -154,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton(
                 onPressed: () => _loginUser(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pinkAccent,
+                  backgroundColor:  Color(0xFF48319D),
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -172,12 +177,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   TextSpan(
                     text: "Don't have an account? ",
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16, color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
                   ),
                   TextSpan(
                     text: 'Signup',
                     style: TextStyle(
-                      color: Colors.pinkAccent,
+                      color:  Color(0xFF48319D),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -194,6 +199,40 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class DarkModeSwitch extends StatefulWidget {
+  const DarkModeSwitch({super.key});
+
+  @override
+  _DarkModeSwitchState createState() => _DarkModeSwitchState();
+}
+
+class _DarkModeSwitchState extends State<DarkModeSwitch> {
+  bool _isDarkTheme = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isDarkTheme = !_isDarkTheme;
+          });
+    
+          context.read<ThemeBloc>().add(ToggleThemeEvent());
+        },
+        child: Icon(
+          size: 32,
+          _isDarkTheme ? Icons.nights_stay : Icons.wb_sunny,
+          color:
+              _isDarkTheme
+                  ? const Color.fromARGB(255, 170, 214, 235)
+                  : Colors.orange,
         ),
       ),
     );

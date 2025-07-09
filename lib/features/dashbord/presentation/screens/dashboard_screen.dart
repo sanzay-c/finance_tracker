@@ -138,8 +138,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             Column(
                               children: [
                                 Row(
-                                  children: const [
-                                    Icon(Icons.arrow_upward, size: 16),
+                                  children:  [
+                                    Icon(Icons.arrow_upward, size: 16, color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
                                     SizedBox(width: 4),
                                     Text(
                                       "Income",
@@ -199,7 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Text(
                   "Transactions",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -270,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     txn.category == null
                                         ? Icon(
                                           Icons.category,
-                                          color: Colors.white,
+                                          color: Colors.white
                                         )
                                         : null,
                               ),
@@ -281,8 +281,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   children: [
                                     Text(
                                       txn.category ?? "No Category",
-                                      style: const TextStyle(
+                                      style:  TextStyle(
                                         fontWeight: FontWeight.w600,
+                                        color: getColorByTheme(context: context, colorClass: AppColors.textColor)
                                       ),
                                     ),
                                     const SizedBox(height: 2),

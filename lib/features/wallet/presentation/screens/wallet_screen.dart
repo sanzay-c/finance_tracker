@@ -47,7 +47,7 @@ class _WalletScreenState extends State<WalletScreen> {
           context: context,
           colorClass: AppColors.backgroundColor,
         ),
-        title: const Text('My Wallets'),
+        title: Text('My Wallets'),
         automaticallyImplyLeading: false,
         actions: [
           // Add a refresh button for testing
@@ -98,6 +98,10 @@ class _WalletScreenState extends State<WalletScreen> {
                   style: TextStyle(
                     fontSize: 80.sp,
                     fontWeight: FontWeight.bold,
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
                   ),
                 ),
                 4.verticalSpace,
@@ -110,10 +114,15 @@ class _WalletScreenState extends State<WalletScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border(
-                        top: BorderSide(color: Colors.black), 
+                        top: BorderSide(
+                          color: getColorByTheme(
+                            context: context,
+                            colorClass: AppColors.textColor,
+                          ),
+                        ),
                         left: BorderSide.none,
                         right: BorderSide.none,
-                        bottom: BorderSide.none, 
+                        bottom: BorderSide.none,
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -133,6 +142,10 @@ class _WalletScreenState extends State<WalletScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 32.sp,
+                                color: getColorByTheme(
+                                  context: context,
+                                  colorClass: AppColors.textColor,
+                                ),
                               ),
                             ),
                             InkWell(
@@ -244,9 +257,14 @@ class _WalletScreenState extends State<WalletScreen> {
                                               children: [
                                                 Text(
                                                   wallet.name,
-                                                  style: const TextStyle(
+                                                  style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16,
+                                                    color: getColorByTheme(
+                                                      context: context,
+                                                      colorClass:
+                                                          AppColors.textColor,
+                                                    ),
                                                   ),
                                                 ),
                                                 4.verticalSpace,
