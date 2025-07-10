@@ -15,45 +15,48 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Future<void> _onAddTransaction(
-    AddTransactionEvent event, Emitter<TransactionState> emit) async {
-  emit(TransactionLoading());
-  try {
-    // Step 1: Add the transaction
-    await addTransactionUseCase(event.transaction);
+    AddTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(TransactionLoading());
+    try {
+      // Step 1: Add the transaction
+      await addTransactionUseCase(event.transaction);
 
-    // Step 2: Update wallet amount
-    final transaction = event.transaction;
-    final walletRef = FirebaseFirestore.instance
-        .collection('wallets')
-        .doc(transaction.walletId);
+      // Step 2: Update wallet amount
+      final transaction = event.transaction;
+      final walletRef = FirebaseFirestore.instance
+          .collection('wallets')
+          .doc(transaction.walletId);
 
-    await FirebaseFirestore.instance.runTransaction((txn) async {
-      final snapshot = await txn.get(walletRef);
+      await FirebaseFirestore.instance.runTransaction((txn) async {
+        final snapshot = await txn.get(walletRef);
 
-      if (!snapshot.exists) throw Exception('Wallet not found');
+        if (!snapshot.exists) throw Exception('Wallet not found');
 
-      final currentAmount = (snapshot['amount'] ?? 0).toDouble();
-      final currentIncome = (snapshot['totalIncome'] ?? 0).toDouble();
-      final currentExpenses = (snapshot['totalExpenses'] ?? 0).toDouble();
+        final currentAmount = (snapshot['amount'] ?? 0).toDouble();
+        final currentIncome = (snapshot['totalIncome'] ?? 0).toDouble();
+        final currentExpenses = (snapshot['totalExpenses'] ?? 0).toDouble();
 
-      final amount = transaction.amount;
-      final isIncome = transaction.type == 'income';
+        final amount = transaction.amount;
+        final isIncome = transaction.type == 'income';
 
-      final newAmount = isIncome ? currentAmount + amount : currentAmount - amount;
-      final newIncome = isIncome ? currentIncome + amount : currentIncome;
-      final newExpenses = isIncome ? currentExpenses : currentExpenses + amount;
+        final newAmount =
+            isIncome ? currentAmount + amount : currentAmount - amount;
+        final newIncome = isIncome ? currentIncome + amount : currentIncome;
+        final newExpenses =
+            isIncome ? currentExpenses : currentExpenses + amount;
 
-      txn.update(walletRef, {
-        'amount': newAmount,
-        'totalIncome': newIncome,
-        'totalExpenses': newExpenses,
+        txn.update(walletRef, {
+          'amount': newAmount,
+          'totalIncome': newIncome,
+          'totalExpenses': newExpenses,
+        });
       });
-    });
 
-    emit(TransactionSuccess());
-  } catch (e) {
-    emit(TransactionFailure(e.toString()));
+      emit(TransactionSuccess());
+    } catch (e) {
+      emit(TransactionFailure(e.toString()));
+    }
   }
-}
-
 }

@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../domain/entities/transaction_entity.dart';
 
 class TransactionModel extends TransactionEntity {
@@ -32,6 +34,7 @@ class TransactionModel extends TransactionEntity {
       'date': date.toIso8601String(),
       'amount': amount,
       'description': description,
+      'uid': FirebaseAuth.instance.currentUser?.uid,
     };
   }
 

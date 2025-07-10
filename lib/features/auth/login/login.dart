@@ -108,17 +108,34 @@ class _LoginScreenState extends State<LoginScreen> {
             Positioned(child: DarkModeSwitch()),
             Text(
               'Login',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: getColorByTheme(
+                  context: context,
+                  colorClass: AppColors.textColor,
+                ),
+              ),
             ),
             SizedBox(height: 32),
             TextField(
-              style: TextStyle(color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
+              style: TextStyle(
+                color: getColorByTheme(
+                  context: context,
+                  colorClass: AppColors.textColor,
+                ),
+              ),
               controller: _emailController,
               decoration: InputDecoration(
                 labelText: 'Enter email',
                 hintText: 'Enter email',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Color(0xFF48319D), width: 2),
                 ),
               ),
             ),
@@ -129,7 +146,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 return TextField(
                   controller: _passwordController,
                   obscureText: obscureText,
-              style: TextStyle(color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
                   decoration: InputDecoration(
                     labelText: 'Enter password',
                     hintText: 'Enter password',
@@ -143,8 +165,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(width: 2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: Colors.pinkAccent,
+                        color: Color(0xFF48319D),
                         width: 2,
                       ),
                     ),
@@ -159,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: ElevatedButton(
                 onPressed: () => _loginUser(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:  Color(0xFF48319D),
+                  backgroundColor: Color(0xFF48319D),
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -177,12 +203,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   TextSpan(
                     text: "Don't have an account? ",
-                    style: TextStyle(fontSize: 16, color: getColorByTheme(context: context, colorClass: AppColors.textColor)),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: getColorByTheme(
+                        context: context,
+                        colorClass: AppColors.textColor,
+                      ),
+                    ),
                   ),
                   TextSpan(
                     text: 'Signup',
                     style: TextStyle(
-                      color:  Color(0xFF48319D),
+                      color: Color(0xFF48319D),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -223,7 +255,7 @@ class _DarkModeSwitchState extends State<DarkModeSwitch> {
           setState(() {
             _isDarkTheme = !_isDarkTheme;
           });
-    
+
           context.read<ThemeBloc>().add(ToggleThemeEvent());
         },
         child: Icon(

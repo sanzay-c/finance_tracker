@@ -80,6 +80,9 @@ class AddTransactionFormState extends State<AddTransactionForm> {
           colorClass: AppColors.backgroundColor,
         ),
         appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+
           backgroundColor: getColorByTheme(
             context: context,
             colorClass: AppColors.backgroundColor,
@@ -316,8 +319,10 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                       horizontal: 32,
                     ),
                     elevation: 15,
-                    side:  BorderSide(
-                      color: getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
+                    side: BorderSide(
+                      color: Color(0xFF48319D),
+
+                      // getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
                       width: 2,
                     ),
                   ),
@@ -326,7 +331,10 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: getColorByTheme(context: context, colorClass: AppColors.textColor)
+                      color: getColorByTheme(
+                        context: context,
+                        colorClass: AppColors.textColor,
+                      ),
                     ),
                   ),
                 ),

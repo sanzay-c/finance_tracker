@@ -5,8 +5,10 @@ import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/auth/login/login.dart';
 import 'package:finance_tracker/features/auth/services/auth_service.dart';
 import 'package:finance_tracker/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -103,7 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Positioned(child: DarkModeSwitch()),
+            // Positioned(child: DarkModeSwitch()),
 
             Text(
               'Sign Up',
@@ -130,7 +132,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 hintText: 'Enter fullname',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.pinkAccent, width: 2),
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Color(0xFF48319D), width: 2),
                 ),
               ),
             ),
@@ -148,7 +154,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 hintText: 'Enter email',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.pinkAccent, width: 2),
+                ),
+
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Color(0xFF48319D), width: 2),
                 ),
               ),
             ),
@@ -178,8 +188,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
-                        color: Colors.pinkAccent,
+                        color: Color(0xFF48319D),
                         width: 2,
                       ),
                     ),
@@ -205,6 +218,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: Text(
                   "Sign Up",
                   style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: getColorByTheme(
+                    context: context,
+                    colorClass: AppColors.backgroundColor,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Color(0xFF48319D), width: 2),
+                  ),
+                  elevation: 5,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: Image.asset('assets/images/google_img.png'),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "Sign Up With Google",
+                      style: TextStyle(
+                        color: getColorByTheme(
+                          context: context,
+                          colorClass: AppColors.textColor,
+                        ),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

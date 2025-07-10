@@ -143,7 +143,11 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     height: 50,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      border: Border.all(color: getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide)),
+                      border: Border.all(
+                       color: Color(0xFF48319D),
+                      //  getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide)
+                       
+                       ),
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: Center(
@@ -221,7 +225,9 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     elevation: 15,
                     minimumSize: const Size.fromHeight(50),
                     side:  BorderSide(
-                      color: getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
+                      color: Color(0xFF48319D),
+                      
+                      // getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
                       width: 2,
                     ),
                   ),

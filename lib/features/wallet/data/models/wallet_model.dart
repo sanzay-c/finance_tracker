@@ -1,4 +1,5 @@
 import 'package:finance_tracker/features/wallet/domain/entities/wallet_entity.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WalletModel extends WalletEntity {
   WalletModel({
@@ -20,6 +21,7 @@ class WalletModel extends WalletEntity {
       'totalIncome': totalIncome,
       'createdAt': createdAt.toIso8601String(),
       'amount': amount, 
+      'uid': FirebaseAuth.instance.currentUser?.uid,
     };
   }
 
