@@ -53,7 +53,7 @@ class AppColors {
     darkModeColor: Colors.white,
   );
   static ColorModel selectedIndex = ColorModel(
-    lightModeColor: Colors.black,
+    lightModeColor: Color(0xFF48319D),
     darkModeColor: Colors.white,
   );
   static ColorModel unSelectedIndex = ColorModel(

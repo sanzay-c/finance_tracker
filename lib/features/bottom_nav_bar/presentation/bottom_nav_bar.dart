@@ -70,8 +70,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       Icons.home_filled,
                       color:
                           _selectedIndex == 0
-                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
-                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
+                              ? getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.selectedIndex,
+                              )
+                              : getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.unSelectedIndex,
+                              ),
                     ),
                     onPressed: () => _onItemTapped(0),
                   ),
@@ -81,8 +87,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       Icons.bar_chart_rounded,
                       color:
                           _selectedIndex == 1
-                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
-                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
+                              ? getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.selectedIndex,
+                              )
+                              : getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.unSelectedIndex,
+                              ),
                     ),
                     onPressed: () => _onItemTapped(1),
                   ),
@@ -100,8 +112,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       Icons.wallet_rounded,
                       color:
                           _selectedIndex == 2
-                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
-                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
+                              ? getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.selectedIndex,
+                              )
+                              : getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.unSelectedIndex,
+                              ),
                     ),
                     onPressed: () => _onItemTapped(2),
                   ),
@@ -111,8 +129,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       Icons.person_outline,
                       color:
                           _selectedIndex == 3
-                              ? getColorByTheme(context: context, colorClass: AppColors.selectedIndex)
-                              : getColorByTheme(context: context, colorClass: AppColors.unSelectedIndex),
+                              ? getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.selectedIndex,
+                              )
+                              : getColorByTheme(
+                                context: context,
+                                colorClass: AppColors.unSelectedIndex,
+                              ),
                     ),
                     onPressed: () => _onItemTapped(3),
                   ),

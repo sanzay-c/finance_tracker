@@ -26,11 +26,12 @@ class AddTransactionFormState extends State<AddTransactionForm> {
   final TextEditingController descriptionController = TextEditingController();
 
   final List<Map<String, String>> expenseCategories = [
-    {'category': 'Food', 'image': 'assets/images/shopping.png'},
-    {'category': 'Transportation', 'image': 'assets/images/shopping.png'},
-    {'category': 'Entertainment', 'image': 'assets/images/shopping.png'},
+    {'category': 'Food', 'image': 'assets/images/food.png'},
+    {'category': 'Transportation', 'image': 'assets/images/transportation.png'},
+    {'category': 'Entertainment', 'image': 'assets/images/entertainment.png'},
     {'category': 'Shopping', 'image': 'assets/images/shopping.png'},
-    {'category': 'Bills', 'image': 'assets/images/shopping.png'},
+    {'category': 'Health', 'image': 'assets/images/bills.png'},
+    {'category': 'Education', 'image': 'assets/images/education.png'},
   ];
 
   final List<Map<String, String>> wallets = [
