@@ -12,7 +12,6 @@ class DashboardLoaded extends DashboardState {
   final double totalIncome;
   final double totalExpense;
   
-  
 
   DashboardLoaded({
     required this.totalBalance,
