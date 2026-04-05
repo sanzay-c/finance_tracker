@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+// ignore: unnecessary_import
 import 'package:meta/meta.dart';
 
 part 'theme_event.dart';

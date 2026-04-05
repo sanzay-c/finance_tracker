@@ -183,9 +183,12 @@ class _WalletScreenState extends State<WalletScreen> {
                                             borderRadius: BorderRadius.circular(
                                               10.r,
                                             ),
+                                            // ignore: unnecessary_null_comparison
                                             child: wallet.imageUrl != null &&
+                                                    // ignore: unnecessary_non_null_assertion
                                                     wallet.imageUrl!.isNotEmpty
                                                 ? CachedNetworkImage(
+                                                    // ignore: unnecessary_non_null_assertion
                                                     imageUrl: wallet.imageUrl!,
                                                     height: 110.h,
                                                     width: 130.w,

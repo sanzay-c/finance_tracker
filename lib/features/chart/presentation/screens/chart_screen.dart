@@ -54,7 +54,7 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
 
       final dayLabel = "${date.day}/${date.month}";
       final monthLabel = "${date.month}/${date.year}";
-      final yearLabel = date.year.toString();
+      // final yearLabel = date.year.toString();
 
       // Weekly
       if (date.isAfter(sevenDaysAgo)) {
@@ -97,7 +97,7 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
         barWidth: 4,
         isStrokeCapRound: true,
         dotData: FlDotData(show: true),
-        belowBarData: BarAreaData(show: true, color: Colors.green.withOpacity(0.1)),
+        belowBarData: BarAreaData(show: true, color: Colors.green.withValues(alpha: 0.1)),
         spots: List.generate(keys.length, (i) {
           final income = incomeMap[keys[i]] ?? 0;
           return FlSpot(i.toDouble(), income);
@@ -109,7 +109,7 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
         barWidth: 4,
         isStrokeCapRound: true,
         dotData: FlDotData(show: true),
-        belowBarData: BarAreaData(show: true, color: Colors.red.withOpacity(0.1)),
+        belowBarData: BarAreaData(show: true, color: Colors.red.withValues(alpha: 0.1)),
         spots: List.generate(keys.length, (i) {
           final expense = expenseMap[keys[i]] ?? 0;
           return FlSpot(i.toDouble(), expense);
@@ -185,8 +185,8 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
           gridData: FlGridData(
             show: true,
             drawVerticalLine: true,
-            getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1),
-            getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1),
+            getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withValues(alpha: 0.1), strokeWidth: 1),
+            getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.withValues(alpha: 0.1), strokeWidth: 1),
           ),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
@@ -246,7 +246,7 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
           ),
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (touchedSpot) => Colors.blueGrey.withOpacity(0.8),
+              getTooltipColor: (touchedSpot) => Colors.blueGrey.withValues(alpha: 0.8),
               getTooltipItems: (List<LineBarSpot> touchedSpots) {
                 return touchedSpots.map((LineBarSpot touchedSpot) {
                   final textStyle = TextStyle(

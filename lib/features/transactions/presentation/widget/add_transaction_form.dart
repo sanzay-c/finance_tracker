@@ -115,7 +115,7 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                     context: context,
                     colorClass: AppColors.backgroundColor,
                   ),
-                  value: transactionType,
+                  initialValue: transactionType,
                   decoration: _inputDecoration(),
                   items:
                       ['Expense', 'Income']
@@ -148,7 +148,7 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                   ),
                 ),
                 DropdownButtonFormField<String>(
-                  value: selectedWalletId,
+                  initialValue: selectedWalletId,
                   dropdownColor: getColorByTheme(
                     context: context,
                     colorClass: AppColors.backgroundColor,
@@ -191,7 +191,7 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                     context: context,
                     colorClass: AppColors.backgroundColor,
                   ),
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   decoration: _inputDecoration(),
                   hint: const Text("Select Category"),
                   items:

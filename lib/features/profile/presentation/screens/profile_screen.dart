@@ -137,9 +137,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: 68,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _primaryColor.withOpacity(0.12),
+                    color: _primaryColor.withValues(alpha: 0.12),
                     border: Border.all(
-                        color: _primaryColor.withOpacity(0.25), width: 2),
+                        color: _primaryColor.withValues(alpha: 0.25), width: 2),
                   ),
                   child: ClipOval(
                     child: profileImageUrl != null &&
@@ -168,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         email,
                         style: TextStyle(
                           fontSize: 13,
-                          color: textColor.withOpacity(0.45),
+                          color: textColor.withValues(alpha: 0.45),
                         ),
                       ),
                     ],
@@ -286,7 +286,9 @@ class _TileItem extends StatelessWidget {
             Icon(
               Icons.arrow_forward_ios_rounded,
               size: 14,
+              // ignore: unnecessary_type_check
               color: textColor is Color
+                  // ignore: unnecessary_cast
                   ? (textColor as Color).withValues(alpha: 0.3)
                   : Colors.grey.withValues(alpha: 0.3),
             ),
