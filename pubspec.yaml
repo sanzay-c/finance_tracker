@@ -40,7 +40,7 @@ dependencies:
 
   shared_preferences: ^2.5.3
   flutter_bloc: ^9.1.1
-  google_fonts: ^6.2.1
+  google_fonts: ^8.0.2
   flutter_svg: ^2.1.0
   cached_network_image: ^3.4.1
   flutter_screenutil: ^5.9.3
@@ -53,7 +53,7 @@ dependencies:
   firebase_storage: ^12.4.8
   dartz: ^0.10.1
   fl_chart: ^1.0.0
-  google_sign_in: ^7.0.0
+  google_sign_in: ^6.2.0
   flutter_native_splash: ^2.4.6
 
 dev_dependencies:

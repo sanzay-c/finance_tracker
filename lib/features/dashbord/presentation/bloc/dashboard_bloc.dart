@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 part 'dashboard_event.dart';
@@ -15,8 +16,20 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   FutureOr<void> _onFetchDashboardData(FetchDashboardDataEvent event, Emitter<DashboardState> emit) async {
     emit(DashboardLoading());
     try {
-      final walletSnap = await FirebaseFirestore.instance.collection('wallets').get();
-      final transactionSnap = await FirebaseFirestore.instance.collection('transactions').get();
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        emit(DashboardError('User not logged in'));
+        return;
+      }
+
+      final walletSnap = await FirebaseFirestore.instance
+          .collection('wallets')
+          .where('uid', isEqualTo: uid)
+          .get();
+      final transactionSnap = await FirebaseFirestore.instance
+          .collection('transactions')
+          .where('uid', isEqualTo: uid)
+          .get();
 
       double totalBalance = 0;
       double totalIncome = 0;

@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/features/auth/signup/signup.dart';
-import 'package:finance_tracker/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
 import 'package:finance_tracker/features/dashbord/presentation/bloc/dashboard_bloc.dart';
 import 'package:finance_tracker/features/dashbord/presentation/bloc/fetch_transaction_bloc.dart';
-import 'package:finance_tracker/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:finance_tracker/features/wallet/data/remote_data_source/wallet_remote_data_source.dart';
 import 'package:finance_tracker/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
 import 'package:finance_tracker/features/wallet/domain/usecases/add_wallet.dart';
 import 'package:finance_tracker/features/wallet/domain/usecases/get_wallet.dart';
-import 'package:finance_tracker/features/wallet/domain/usecases/wallet_total_income.dart';
 import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';

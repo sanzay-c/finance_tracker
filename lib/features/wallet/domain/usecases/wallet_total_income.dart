@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WalletTotalIncome {
   final FirebaseFirestore firestore;
@@ -8,6 +9,7 @@ class WalletTotalIncome {
   Future<double> call(String walletId) async {
     final snapshot = await firestore
         .collection('transactions')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
         .where('walletId', isEqualTo: walletId)
         .get();
 

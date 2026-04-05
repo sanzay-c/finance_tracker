@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,6 @@ class _WalletScreenState extends State<WalletScreen> {
         title: Text('My Wallets'),
         automaticallyImplyLeading: false,
         actions: [
-          // Add a refresh button for testing
           IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchWallets),
         ],
       ),
@@ -183,71 +183,40 @@ class _WalletScreenState extends State<WalletScreen> {
                                             borderRadius: BorderRadius.circular(
                                               10.r,
                                             ),
-                                            child:
-                                                wallet.imageUrl != null &&
-                                                        wallet
-                                                            .imageUrl!
-                                                            .isNotEmpty
-                                                    ? Image.network(
-                                                      wallet.imageUrl!,
+                                            child: wallet.imageUrl != null &&
+                                                    wallet.imageUrl!.isNotEmpty
+                                                ? CachedNetworkImage(
+                                                    imageUrl: wallet.imageUrl!,
+                                                    height: 110.h,
+                                                    width: 130.w,
+                                                    fit: BoxFit.cover,
+                                                    placeholder: (context, url) => Container(
                                                       height: 110.h,
                                                       width: 130.w,
-                                                      fit: BoxFit.cover,
-                                                      loadingBuilder: (
-                                                        context,
-                                                        child,
-                                                        loadingProgress,
-                                                      ) {
-                                                        if (loadingProgress ==
-                                                            null)
-                                                          return child;
-                                                        return Container(
-                                                          height: 110.h,
-                                                          width: 130.w,
-                                                          color:
-                                                              Colors
-                                                                  .grey
-                                                                  .shade200,
-                                                          child: Center(
-                                                            child: CircularProgressIndicator(
-                                                              value:
-                                                                  loadingProgress
-                                                                              .expectedTotalBytes !=
-                                                                          null
-                                                                      ? loadingProgress
-                                                                              .cumulativeBytesLoaded /
-                                                                          loadingProgress
-                                                                              .expectedTotalBytes!
-                                                                      : null,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      errorBuilder: (
-                                                        context,
-                                                        error,
-                                                        stackTrace,
-                                                      ) {
-                                                        return Container(
-                                                          height: 110.h,
-                                                          width: 130.w,
-                                                          color:
-                                                              Colors
-                                                                  .grey
-                                                                  .shade300,
-                                                          child: const Icon(
-                                                            Icons.broken_image,
-                                                            color: Colors.grey,
-                                                          ),
-                                                        );
-                                                      },
-                                                    )
-                                                    : Container(
-                                                      height: 110.h,
-                                                      width: 130.w,
-                                                      color:
-                                                          Colors.grey.shade300,
+                                                      color: Colors.grey.shade200,
+                                                      child: const Center(
+                                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                                      ),
                                                     ),
+                                                    errorWidget: (context, url, error) => Container(
+                                                      height: 110.h,
+                                                      width: 130.w,
+                                                      color: Colors.grey.shade300,
+                                                      child: const Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : Container(
+                                                    height: 110.h,
+                                                    width: 130.w,
+                                                    color: Colors.grey.shade300,
+                                                    child: const Icon(
+                                                      Icons.wallet_outlined,
+                                                      color: Colors.grey,
+                                                    ),
+                                                  ),
                                           ),
                                           12.horizontalSpace,
                                           Expanded(

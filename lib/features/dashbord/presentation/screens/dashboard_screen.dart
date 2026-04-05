@@ -74,10 +74,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ],
             ),
-            CircleAvatar(
-              backgroundColor: Colors.grey.shade200,
-              child: Icon(Icons.search, color: Colors.black),
-            ),
           ],
         ),
         automaticallyImplyLeading: false,
@@ -253,26 +249,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 height: 45,
                                 width: 45,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade600,
+                                  color: isIncome ? Colors.green : Colors.grey.shade600,
                                   borderRadius: BorderRadius.circular(10),
-                                  image:
-                                      txn.category != null
-                                          ? DecorationImage(
-                                            image: NetworkImage(
-                                              // Provide the image URL if exists
-                                              "https://your-image-source/${txn.category}.png",
-                                            ),
-                                            fit: BoxFit.cover,
-                                          )
-                                          : null,
                                 ),
                                 child:
-                                    txn.category == null
-                                        ? Icon(
-                                          Icons.category,
-                                          color: Colors.white
+                                    isIncome
+                                        ? const Icon(
+                                          Icons.arrow_circle_up_outlined,
+                                          color: Colors.white,
                                         )
-                                        : null,
+                                        : _getCategoryAsset(txn.category) != null
+                                            ? ClipRRect(
+                                                borderRadius: BorderRadius.circular(10),
+                                                child: Image.asset(
+                                                  _getCategoryAsset(txn.category)!,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              )
+                                            : const Icon(
+                                              Icons.category,
+                                              color: Colors.white,
+                                            ),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
@@ -280,10 +277,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      txn.category ?? "No Category",
-                                      style:  TextStyle(
+                                      isIncome
+                                          ? "Income"
+                                          : txn.category ?? "No Category",
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: getColorByTheme(context: context, colorClass: AppColors.textColor)
+                                        color: getColorByTheme(
+                                          context: context,
+                                          colorClass: AppColors.textColor,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(height: 2),
@@ -310,7 +312,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    // Format date to a user-friendly string, e.g. "11 Dec"
                                     "${txn.date.day} ${_monthAbbreviation(txn.date.month)}",
                                     style: TextStyle(
                                       fontSize: 12,
@@ -337,6 +338,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+}
+
+String? _getCategoryAsset(String? category) {
+  if (category == null) return null;
+  final mapping = {
+    'Food': 'assets/images/food.png',
+    'Transportation': 'assets/images/transportation.png',
+    'Entertainment': 'assets/images/entertainment.png',
+    'Shopping': 'assets/images/shopping.png',
+    'Health': 'assets/images/bills.png',
+    'Education': 'assets/images/education.png',
+  };
+  return mapping[category];
 }
 
 String _monthAbbreviation(int month) {

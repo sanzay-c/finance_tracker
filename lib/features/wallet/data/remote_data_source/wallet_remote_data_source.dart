@@ -1,5 +1,6 @@
 import 'package:finance_tracker/features/wallet/data/models/wallet_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WalletRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -11,7 +12,13 @@ class WalletRemoteDataSource {
   }
 
   Future<List<WalletModel>> getWallets() async {
-    final snapshot = await firestore.collection('wallets').get();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return [];
+
+    final snapshot = await firestore
+        .collection('wallets')
+        .where('uid', isEqualTo: uid)
+        .get();
 
     return snapshot.docs.map((doc) {
       final data = doc.data();

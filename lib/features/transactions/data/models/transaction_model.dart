@@ -1,3 +1,4 @@
+import 'package:finance_tracker/core/utils/date_parser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../domain/entities/transaction_entity.dart';
@@ -44,7 +45,7 @@ class TransactionModel extends TransactionEntity {
       type: map['type'],
       walletId: map['walletId'],
       category: map['category'],
-      date: DateTime.parse(map['date']),
+      date: DateParser.parse(map['date']),
       amount: map['amount']?.toDouble() ?? 0.0,
       description: map['description'],
     );

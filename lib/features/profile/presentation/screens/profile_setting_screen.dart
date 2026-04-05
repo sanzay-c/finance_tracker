@@ -133,5 +133,3 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
     );
   }
 }
-
-

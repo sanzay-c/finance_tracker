@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/core/utils/date_parser.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_tracker/features/transactions/domain/entities/transaction_entity.dart';
 import 'package:meta/meta.dart';
 
@@ -16,8 +18,15 @@ class FetchTransactionBloc extends Bloc<FetchTransactionEvent, FetchTransactionS
   FutureOr<void> _onFetchTransactionsEvent(FetchTransactionsEvent event, Emitter<FetchTransactionState> emit) async {
     emit(FetchTransactionLoading());
     try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) {
+        emit(FetchTransactionError("User not logged in"));
+        return;
+      }
+      
       final snapshot = await FirebaseFirestore.instance
           .collection('transactions')
+          .where('uid', isEqualTo: uid)
           .orderBy('date', descending: true)
           .limit(5)
           .get();
@@ -29,7 +38,7 @@ class FetchTransactionBloc extends Bloc<FetchTransactionEvent, FetchTransactionS
           type: data['type'],
           walletId: data['walletId'],
           category: data['category'],
-          date: DateTime.parse(data['date']),
+          date: DateParser.parse(data['date']),
           amount: (data['amount'] as num).toDouble(),
           description: data['description'],
         );

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,8 +40,19 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
   }
 
   Future<String?> uploadImageToServer(File imageFile) async {
-    await Future.delayed(const Duration(seconds: 1));
-    return "${DateTime.now().millisecondsSinceEpoch}";
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('wallets')
+          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+      
+      final uploadTask = await storageRef.putFile(imageFile);
+      final downloadUrl = await uploadTask.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      debugPrint('Error uploading image: $e');
+      return null;
+    }
   }
 
   Future<void> _submitWallet() async {
@@ -144,9 +156,7 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(
-                       color: Color(0xFF48319D),
-                      //  getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide)
-                       
+                       color: Color(0xFF48319D),                       
                        ),
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -226,8 +236,6 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
                     minimumSize: const Size.fromHeight(50),
                     side:  BorderSide(
                       color: Color(0xFF48319D),
-                      
-                      // getColorByTheme(context: context, colorClass: AppColors.buttonBorderSide),
                       width: 2,
                     ),
                   ),

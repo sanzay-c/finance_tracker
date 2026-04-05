@@ -17,7 +17,7 @@
         totalExpenses: wallet.totalExpenses,
         totalIncome: wallet.totalIncome,
         createdAt: wallet.createdAt,
-        amount: wallet.amount,
+        amount: wallet.amount, uid: '',
       );
       await remoteDataSource.addWallet(model);
     }
@@ -34,7 +34,7 @@
               totalExpenses: model.totalExpenses,
               amount: model.amount,
               totalIncome: model.totalIncome,
-              createdAt: model.createdAt,
+              createdAt: model.createdAt, uid: '',
             ),
           )
           .toList();

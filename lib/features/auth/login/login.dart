@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
 import 'package:flutter/gestures.dart';
@@ -58,19 +59,61 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final user = await _auth.loginUserWithEmailAndPassword(
-      enteredEmail,
-      enteredPassword,
-    );
+    try {
+      final user = await _auth.loginUserWithEmailAndPassword(
+        enteredEmail,
+        enteredPassword,
+      );
 
-    if (user != null) {
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userEmail', enteredEmail); // Save session info
+      if (user != null) {
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userEmail', enteredEmail); // Save session info
 
-      _showSnackBar("Login successful!", isError: false);
-      _navigateToHome();
-    } else {
-      _showSnackBar("Incorrect email or password.", isError: true);
+        _showSnackBar("Login successful!", isError: false);
+        _navigateToHome();
+      } else {
+        _showSnackBar("Incorrect email or password.", isError: true);
+      }
+    } catch (e) {
+      _showSnackBar(e.toString().replaceAll("Exception: ", ""), isError: true);
+    }
+  }
+
+  Future<void> _loginWithGoogle(BuildContext context) async {
+    try {
+      final user = await _auth.signInWithGoogle();
+
+      if (user != null) {
+        // Store credentials locally
+        final pref = await SharedPreferences.getInstance();
+        await pref.setBool('isLoggedIn', true);
+        await pref.setString('userEmail', user.email ?? '');
+
+        // Check if user already exists in Firestore
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (!userDoc.exists) {
+          // Create new user document
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'uid': user.uid,
+            'fullName': user.displayName ?? 'Google User',
+            'email': user.email,
+            'profileImageUrl': user.photoURL ?? '',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+
+        _showSnackBar("Login with Google successful!", isError: false);
+        _navigateToHome();
+      }
+    } catch (e) {
+      _showSnackBar("Google Sign-In failed: $e", isError: true);
     }
   }
 
@@ -194,6 +237,46 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text(
                   "Login",
                   style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _loginWithGoogle(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: getColorByTheme(
+                    context: context,
+                    colorClass: AppColors.backgroundColor,
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Color(0xFF48319D), width: 2),
+                  ),
+                  elevation: 5,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: Image.asset('assets/images/google_img.png'),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      "Sign In With Google",
+                      style: TextStyle(
+                        color: getColorByTheme(
+                          context: context,
+                          colorClass: AppColors.textColor,
+                        ),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

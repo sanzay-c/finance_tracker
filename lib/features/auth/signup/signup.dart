@@ -5,10 +5,8 @@ import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/auth/login/login.dart';
 import 'package:finance_tracker/features/auth/services/auth_service.dart';
 import 'package:finance_tracker/features/bottom_nav_bar/presentation/bottom_nav_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -43,22 +41,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     try {
-      // Create user in Firebase Auth
       final user = await _auth.createUserWithEmailAndPassword(email, password);
 
       if (user != null) {
-        // Store credentials locally (for auto-login)
         final pref = await SharedPreferences.getInstance();
         await pref.setString('email', email);
         await pref.setString('password', password);
         await pref.setBool('isLoggedIn', true);
 
-        // Create user document in Firestore
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'uid': user.uid,
           'fullName': fullName,
           'email': email,
-          'profileImageUrl': '', // Default or empty for now
+          'profileImageUrl': '', 
           'createdAt': FieldValue.serverTimestamp(),
         });
 
@@ -84,12 +79,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
           content: Text(
             e.toString().contains('already in use')
                 ? "Email already in use. Please use a different email."
-                : "Error creating account: ${e.toString()}",
+                : "Error creating account: ${e.toString().replaceAll("Exception: ", "")}",
           ),
           backgroundColor: Colors.red,
         ),
       );
       log('$e');
+    }
+  }
+
+  Future<void> _signUpWithGoogle(BuildContext context) async {
+    try {
+      final user = await _auth.signInWithGoogle();
+
+      if (user != null) {
+        final pref = await SharedPreferences.getInstance();
+        await pref.setBool('isLoggedIn', true);
+        await pref.setString('email', user.email ?? '');
+
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (!userDoc.exists) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+                'uid': user.uid,
+                'fullName': user.displayName ?? 'Google User',
+                'email': user.email,
+                'profileImageUrl': user.photoURL ?? '',
+                'createdAt': FieldValue.serverTimestamp(),
+              });
+        }
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text("Signed in with Google successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text("Google Sign-In failed: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -105,8 +153,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Positioned(child: DarkModeSwitch()),
-
             Text(
               'Sign Up',
               style: TextStyle(
@@ -225,7 +271,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () => _signUpWithGoogle(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: getColorByTheme(
                     context: context,

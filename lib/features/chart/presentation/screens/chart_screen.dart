@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/core/utils/date_parser.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -35,14 +37,18 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
     final firstOfMonth = DateTime(now.year, now.month, 1);
     final firstOfYear = DateTime(now.year, 1, 1);
 
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
     final snapshot = await FirebaseFirestore.instance
         .collection('transactions')
+        .where('uid', isEqualTo: uid)
         .orderBy('date', descending: true)
         .get();
 
     for (var doc in snapshot.docs) {
       final data = doc.data();
-      final date = DateTime.parse(data['date']);
+      final date = DateParser.parse(data['date']);
       final amount = (data['amount'] as num).toDouble();
       final type = data['type'];
 
@@ -83,23 +89,33 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
     });
   }
 
-  List<BarChartGroupData> buildBarGroups(Map<String, double> incomeMap, Map<String, double> expenseMap) {
-    final keys = incomeMap.keys.toSet().union(expenseMap.keys.toSet()).toList()
-      ..sort((a, b) => _parseDateLabel(a).compareTo(_parseDateLabel(b)));
-
-    return List.generate(keys.length, (i) {
-      final key = keys[i];
-      final income = incomeMap[key] ?? 0;
-      final expense = expenseMap[key] ?? 0;
-
-      return BarChartGroupData(
-        x: i,
-        barRods: [
-          BarChartRodData(toY: income, color: Colors.green, width: 7),
-          BarChartRodData(toY: expense, color: Colors.red, width: 7),
-        ],
-      );
-    });
+  List<LineChartBarData> buildLineData(Map<String, double> incomeMap, Map<String, double> expenseMap, List<String> keys) {
+    return [
+      LineChartBarData(
+        isCurved: true,
+        color: Colors.green,
+        barWidth: 4,
+        isStrokeCapRound: true,
+        dotData: FlDotData(show: true),
+        belowBarData: BarAreaData(show: true, color: Colors.green.withOpacity(0.1)),
+        spots: List.generate(keys.length, (i) {
+          final income = incomeMap[keys[i]] ?? 0;
+          return FlSpot(i.toDouble(), income);
+        }),
+      ),
+      LineChartBarData(
+        isCurved: true,
+        color: Colors.red,
+        barWidth: 4,
+        isStrokeCapRound: true,
+        dotData: FlDotData(show: true),
+        belowBarData: BarAreaData(show: true, color: Colors.red.withOpacity(0.1)),
+        spots: List.generate(keys.length, (i) {
+          final expense = expenseMap[keys[i]] ?? 0;
+          return FlSpot(i.toDouble(), expense);
+        }),
+      ),
+    ];
   }
 
   double _getMaxY(Map<String, double> income, Map<String, double> expense) {
@@ -153,51 +169,108 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
     final keys = incomeMap.keys.toSet().union(expenseMap.keys.toSet()).toList()
       ..sort((a, b) => _parseDateLabel(a).compareTo(_parseDateLabel(b)));
 
-    final barGroups = buildBarGroups(incomeMap, expenseMap);
+    if (keys.isEmpty) {
+      return const Center(child: Text("No data for this period"));
+    }
+
+    final lineData = buildLineData(incomeMap, expenseMap, keys);
 
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceBetween,
+      padding: const EdgeInsets.only(top: 12, right: 24, left: 16, bottom: 12),
+      child: LineChart(
+        LineChartData(
+          lineBarsData: lineData,
           maxY: _getMaxY(incomeMap, expenseMap),
-          barGroups: barGroups,
-          gridData: FlGridData(show: true),
+          minY: 0,
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: true,
+            getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1),
+            getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.1), strokeWidth: 1),
+          ),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
             leftTitles: AxisTitles(
+              axisNameWidget: const Text(
+                'Amount (Rs.)',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
+              ),
+              axisNameSize: 22,
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 40,
-                interval: 100,
+                reservedSize: 44,
                 getTitlesWidget: (value, meta) {
+                  if (value == 0) return const SizedBox.shrink();
+                  String text = value.toInt().toString();
+                  if (value >= 1000) {
+                    text = '${(value / 1000).toStringAsFixed(1)}k';
+                  }
                   return Text(
-                    value.toInt().toString(),
-                    style: const TextStyle(fontSize: 10),
+                    text,
+                    style: const TextStyle(fontSize: 10, color: Colors.grey),
                   );
                 },
               ),
             ),
             bottomTitles: AxisTitles(
+              axisNameWidget: const Text(
+                'Period',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
+              ),
+              axisNameSize: 22,
               sideTitles: SideTitles(
                 showTitles: true,
                 interval: 1,
                 getTitlesWidget: (value, meta) {
                   final index = value.toInt();
-                  if (index >= keys.length) return const SizedBox.shrink();
-                  final label = keys[index].split('/')[0]; // show day or month
+                  if (index < 0 || index >= keys.length) return const SizedBox.shrink();
+                  String label = keys[index].split('/')[0];
+                  
+                  // For Yearly view, convert month number to abbreviation
+                  if (_tabController.index == 2) {
+                    final month = int.tryParse(label) ?? 0;
+                    if (month > 0 && month <= 12) {
+                      label = _monthAbbreviation(month);
+                    }
+                  }
+
                   return Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(label),
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
                   );
                 },
               ),
             ),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          ),
+          lineTouchData: LineTouchData(
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipColor: (touchedSpot) => Colors.blueGrey.withOpacity(0.8),
+              getTooltipItems: (List<LineBarSpot> touchedSpots) {
+                return touchedSpots.map((LineBarSpot touchedSpot) {
+                  final textStyle = TextStyle(
+                    color: touchedSpot.bar.color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  );
+                  return LineTooltipItem(
+                    'Rs. ${touchedSpot.y.toStringAsFixed(2)}',
+                    textStyle,
+                  );
+                }).toList();
+              },
+            ),
           ),
         ),
       ),
     );
+  }
+  String _monthAbbreviation(int month) {
+    const months = [
+      "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    return months[month];
   }
 }

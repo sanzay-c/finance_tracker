@@ -20,10 +20,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      // Step 1: Add the transaction
       await addTransactionUseCase(event.transaction);
 
-      // Step 2: Update wallet amount
       final transaction = event.transaction;
       final walletRef = FirebaseFirestore.instance
           .collection('wallets')
@@ -43,6 +41,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
         final newAmount =
             isIncome ? currentAmount + amount : currentAmount - amount;
+        
+        if (!isIncome && newAmount < 0) {
+          throw Exception('Insufficient balance in this wallet (Current: Rs. $currentAmount)');
+        }
+
         final newIncome = isIncome ? currentIncome + amount : currentIncome;
         final newExpenses =
             isIncome ? currentExpenses : currentExpenses + amount;

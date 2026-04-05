@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/transactions/domain/entities/transaction_entity.dart';
 import 'package:finance_tracker/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:finance_tracker/features/wallet/data/models/wallet_model.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,8 +48,13 @@ class AddTransactionFormState extends State<AddTransactionForm> {
   }
 
   Future<void> fetchWallets() async {
-    final snapshot =
-        await FirebaseFirestore.instance.collection('wallets').get();
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('wallets')
+        .where('uid', isEqualTo: uid)
+        .get();
     final wallets =
         snapshot.docs.map((doc) {
           final data = doc.data();
@@ -349,13 +354,44 @@ class AddTransactionFormState extends State<AddTransactionForm> {
 
   void _submitTransaction() {
     if (_formKey.currentState!.validate()) {
+      final amount = double.tryParse(amountController.text) ?? 0.0;
+      final isExpense = transactionType.toLowerCase() == 'expense';
+
+      if (isExpense) {
+        final selectedWallet = walletList.firstWhere(
+          (w) => w.id == selectedWalletId,
+          orElse: () => WalletModel(
+            id: '',
+            name: '',
+            amount: 0,
+            uid: '',
+            createdAt: DateTime.now(),
+            totalExpenses: 0.0,
+            totalIncome: 0.0,
+            imageUrl: '',
+          ),
+        );
+
+        if (selectedWallet.amount < amount) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Insufficient balance in ${selectedWallet.name} (Available: Rs. ${selectedWallet.amount.toStringAsFixed(2)})',
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+      }
+
       final transaction = TransactionEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         type: transactionType.toLowerCase(),
         walletId: selectedWalletId!,
         category: transactionType == 'Expense' ? selectedCategory : null,
         date: selectedDate,
-        amount: double.tryParse(amountController.text) ?? 0.0,
+        amount: amount,
         description:
             descriptionController.text.trim().isEmpty
                 ? null

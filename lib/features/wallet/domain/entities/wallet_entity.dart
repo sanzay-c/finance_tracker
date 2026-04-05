@@ -6,6 +6,7 @@ class WalletEntity {
   final double totalExpenses;
   final double totalIncome;
   final DateTime createdAt;
+  final String uid;
   
   WalletEntity({
     required this.id,
@@ -15,6 +16,7 @@ class WalletEntity {
     required this.totalExpenses,
     required this.totalIncome,
     required this.createdAt,
+    required this.uid,
   });
 
   WalletEntity copyWith({
@@ -25,6 +27,7 @@ class WalletEntity {
     double? totalExpenses,
     double? totalIncome,
     DateTime? createdAt,
+    String? uid,
   }) {
     return WalletEntity(
       id: id ?? this.id,
@@ -34,6 +37,7 @@ class WalletEntity {
       totalExpenses: totalExpenses ?? this.totalExpenses,
       totalIncome: totalIncome ?? this.totalIncome,
       createdAt: createdAt ?? this.createdAt,
+      uid: uid ?? this.uid,
     );
   }
 }
