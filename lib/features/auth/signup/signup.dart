@@ -124,9 +124,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         );
 
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const BottomNavBar()),
+          (route) => false,
         );
       }
     } catch (e) {
@@ -331,7 +332,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     recognizer:
                         TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => LoginScreen(),

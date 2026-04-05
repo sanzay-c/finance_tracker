@@ -118,9 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToHome() {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => BottomNavBar()),
+      (route) => false,
     );
   }
 
@@ -304,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     recognizer:
                         TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (_) => SignUpScreen()),
                             );
