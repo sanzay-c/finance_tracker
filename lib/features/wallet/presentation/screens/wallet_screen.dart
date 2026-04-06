@@ -1,11 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
+import 'package:finance_tracker/features/wallet/presentation/widgets/wallet_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:finance_tracker/features/wallet/presentation/screens/add_wallet_screen.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+const _primaryColor = Color(0xFF48319D);
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -22,7 +24,6 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   void _fetchWallets() {
-    print('🔄 Fetching wallets...');
     context.read<AddWalletBloc>().add(FetchWalletsEvent());
   }
 
@@ -31,233 +32,178 @@ class _WalletScreenState extends State<WalletScreen> {
       context,
       MaterialPageRoute(builder: (_) => const AddWalletScreen()),
     );
-    if (result == true) {
-      _fetchWallets();
-    }
+    if (result == true) _fetchWallets();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = getColorByTheme(
+      context: context,
+      colorClass: AppColors.backgroundColor,
+    );
+    final textColor = getColorByTheme(
+      context: context,
+      colorClass: AppColors.textColor,
+    );
+    final isDark = bgColor.computeLuminance() < 0.5;
+
     return Scaffold(
-      backgroundColor: getColorByTheme(
-        context: context,
-        colorClass: AppColors.backgroundColor,
-      ),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: getColorByTheme(
-          context: context,
-          colorClass: AppColors.backgroundColor,
-        ),
-        title: Text('My Wallets'),
+        backgroundColor: bgColor,
+        elevation: 0,
         automaticallyImplyLeading: false,
+        title: Text(
+          'My Wallets',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: textColor,
+          ),
+        ),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchWallets),
+          IconButton(
+            icon: Icon(Icons.refresh_rounded,
+                color: textColor.withValues(alpha: 0.4)),
+            onPressed: _fetchWallets,
+          ),
         ],
       ),
       body: SafeArea(
         child: BlocConsumer<AddWalletBloc, AddWalletState>(
           listener: (context, state) {
             if (state is AddWalletError) {
-              print('❌ Error: ${state.errorMessage}');
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: Colors.white, size: 18),
+                      const SizedBox(width: 8),
+                      Text(state.errorMessage),
+                    ],
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Colors.red.shade700,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  margin: const EdgeInsets.all(16),
+                ),
+              );
             }
           },
           builder: (context, state) {
-            print('🏗️ Building with state: ${state.runtimeType}');
-
             if (state is AddWalletLoading) {
-              print('⏳ Loading...');
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                  child: CircularProgressIndicator(color: _primaryColor));
             }
 
             if (state is! GetWalletsLoaded) {
-              print('📭 No wallets loaded yet');
-              return const Center(child: Text('No wallets found'));
+              return Center(
+                child: Text('No wallets found',
+                    style: TextStyle(color: textColor.withValues(alpha: 0.4))),
+              );
             }
 
             final wallets = state.wallets;
-            print('💰 Loaded ${wallets.length} wallets:');
-            for (var wallet in wallets) {
-              print('  - ${wallet.name}: Rs.${wallet.amount}');
-            }
-
-            final totalBalance = wallets.fold<double>(
-              0,
-              (sum, wallet) => sum + wallet.amount,
-            );
-            print('💵 Total balance: Rs.$totalBalance');
+            final totalBalance =
+                wallets.fold<double>(0, (sum, w) => sum + w.amount);
 
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                20.verticalSpace,
-                Text(
-                  'Rs.${totalBalance.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 80.sp,
-                    fontWeight: FontWeight.bold,
-                    color: getColorByTheme(
-                      context: context,
-                      colorClass: AppColors.textColor,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Rs.${totalBalance.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 80.sp,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      4.verticalSpace,
+                      Text(
+                        'Total Balance',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 40.sp,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                4.verticalSpace,
-                Text(
-                  'Total Balance',
-                  style: TextStyle(color: Colors.grey, fontSize: 40.sp),
-                ),
-                30.verticalSpace,
+
                 Expanded(
                   child: Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.03)
+                          : Colors.black.withValues(alpha: 0.02),
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(24)),
                       border: Border(
                         top: BorderSide(
-                          color: getColorByTheme(
-                            context: context,
-                            colorClass: AppColors.textColor,
-                          ),
-                        ),
-                        left: BorderSide.none,
-                        right: BorderSide.none,
-                        bottom: BorderSide.none,
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
+                            color: textColor.withValues(alpha: 0.08), width: 1),
                       ),
                     ),
-
-                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'My Wallets',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 32.sp,
-                                color: getColorByTheme(
-                                  context: context,
-                                  colorClass: AppColors.textColor,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 16, 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'My Wallets',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 32.sp,
+                                  color: textColor,
                                 ),
                               ),
-                            ),
-                            InkWell(
-                              onTap: _navigateToAddWallet,
-                              child: CircleAvatar(
-                                radius: 24.r,
-                                backgroundColor: Colors.grey,
-                                child: const Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        20.verticalSpace,
-                        Expanded(
-                          child:
-                              wallets.isEmpty
-                                  ? const Center(
-                                    child: Text(
-                                      'No wallets added yet',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  )
-                                  : ListView.separated(
-                                    padding: const EdgeInsets.only(bottom: 100),
-                                    itemCount: wallets.length,
-                                    separatorBuilder:
-                                        (_, __) => const SizedBox(height: 16),
-                                    itemBuilder: (context, index) {
-                                      final wallet = wallets[index];
-                                      return Row(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              10.r,
-                                            ),
-                                            // ignore: unnecessary_null_comparison
-                                            child: wallet.imageUrl != null &&
-                                                    // ignore: unnecessary_non_null_assertion
-                                                    wallet.imageUrl!.isNotEmpty
-                                                ? CachedNetworkImage(
-                                                    // ignore: unnecessary_non_null_assertion
-                                                    imageUrl: wallet.imageUrl!,
-                                                    height: 110.h,
-                                                    width: 130.w,
-                                                    fit: BoxFit.cover,
-                                                    placeholder: (context, url) => Container(
-                                                      height: 110.h,
-                                                      width: 130.w,
-                                                      color: Colors.grey.shade200,
-                                                      child: const Center(
-                                                        child: CircularProgressIndicator(strokeWidth: 2),
-                                                      ),
-                                                    ),
-                                                    errorWidget: (context, url, error) => Container(
-                                                      height: 110.h,
-                                                      width: 130.w,
-                                                      color: Colors.grey.shade300,
-                                                      child: const Icon(
-                                                        Icons.broken_image,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : Container(
-                                                    height: 110.h,
-                                                    width: 130.w,
-                                                    color: Colors.grey.shade300,
-                                                    child: const Icon(
-                                                      Icons.wallet_outlined,
-                                                      color: Colors.grey,
-                                                    ),
-                                                  ),
-                                          ),
-                                          12.horizontalSpace,
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  wallet.name,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                    color: getColorByTheme(
-                                                      context: context,
-                                                      colorClass:
-                                                          AppColors.textColor,
-                                                    ),
-                                                  ),
-                                                ),
-                                                4.verticalSpace,
-                                                Text(
-                                                  'Rs.${wallet.amount.toStringAsFixed(2)}',
-                                                  style: const TextStyle(
-                                                    color: Colors.grey,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const Icon(
-                                            Icons.arrow_forward_ios,
-                                            size: 18,
-                                          ),
-                                        ],
-                                      );
-                                    },
+                              GestureDetector(
+                                onTap: _navigateToAddWallet,
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: _primaryColor,
+                                    shape: BoxShape.circle,
                                   ),
+                                  child: const Icon(Icons.add,
+                                      color: Colors.white, size: 20),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Expanded(
+                          child: wallets.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No wallets added yet',
+                                    style: TextStyle(
+                                        color: textColor.withValues(alpha: 0.4)),
+                                  ),
+                                ) 
+                              : ListView.builder(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      16, 0, 16, 100),
+                                  itemCount: wallets.length,
+                                  itemBuilder: (context, index) {
+                                    return WalletTile(
+                                      wallet: wallets[index],
+                                      textColor: textColor,
+                                      isDark: isDark,
+                                    );
+                                  },
+                                ),
                         ),
                       ],
                     ),

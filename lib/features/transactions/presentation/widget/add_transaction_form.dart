@@ -248,6 +248,24 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                       firstDate: DateTime(2000),
                       lastDate: DateTime.now(),
                       barrierColor: const Color.fromARGB(81, 0, 0, 0),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: ColorScheme.light(
+                              primary: const Color(0xFF48319D),
+                              onPrimary: Colors.white,
+                              surface: Colors.white,
+                              onSurface: Colors.black87,
+                            ),
+                            textButtonTheme: TextButtonThemeData(
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF48319D),
+                              ),
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
                     );
                     if (pickedDate != null) {
                       setState(() => selectedDate = pickedDate);
@@ -306,6 +324,12 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                   ),
                 ),
                 TextFormField(
+                  style: TextStyle(
+                    color: getColorByTheme(
+                      context: context,
+                      colorClass: AppColors.textColor,
+                    ),
+                  ),
                   controller: descriptionController,
                   maxLines: 3,
                   decoration: _inputDecoration(),
