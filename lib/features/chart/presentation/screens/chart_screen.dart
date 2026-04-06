@@ -176,7 +176,7 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
     final lineData = buildLineData(incomeMap, expenseMap, keys);
 
     return Padding(
-      padding: const EdgeInsets.only(top: 12, right: 24, left: 16, bottom: 12),
+      padding: const EdgeInsets.only(top: 12, right: 24, left: 16, bottom: 60),
       child: LineChart(
         LineChartData(
           lineBarsData: lineData,

@@ -41,12 +41,17 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
 
   Future<String?> uploadImageToServer(File imageFile) async {
     try {
-      final storageRef = FirebaseStorage.instance
+      final storageRef = FirebaseStorage.instanceFor(
+              bucket: 'personal-finance-tracker-6f0a1.firebasestorage.app')
           .ref()
           .child('wallets')
           .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
 
       final snapshot = await storageRef.putFile(imageFile);
+      
+      // Defensive delay to allow server indexing
+      await Future.delayed(const Duration(milliseconds: 500));
+
       try {
         final downloadUrl = await snapshot.ref.getDownloadURL();
         return downloadUrl;

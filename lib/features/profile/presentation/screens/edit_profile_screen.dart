@@ -1,11 +1,7 @@
-import 'dart:developer';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 const _primaryColor = Color(0xFF48319D);
 
@@ -21,9 +17,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
-  File? _imageFile;
   bool _isLoading = false;
-  bool _isPickingImage = false;
 
   @override
   void initState() {
@@ -37,28 +31,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    if (_isPickingImage) return;
-    setState(() => _isPickingImage = true);
-
-    try {
-      final pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,
-      );
-
-      if (pickedFile != null) {
-        log('Picked file path: ${pickedFile.path}');
-        setState(() {
-          _imageFile = File(pickedFile.path);
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isPickingImage = false);
-      }
-    }
-  }
 
   Future<void> _saveChanges() async {
     final name = _nameController.text.trim();
@@ -76,27 +48,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (user == null) return;
 
       String? newImageUrl = widget.currentImageUrl;
-
-      // Handle image upload if a new image was picked
-      if (_imageFile != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('profile_images')
-            .child('${user.uid}.jpg');
-
-        final snapshot = await storageRef.putFile(_imageFile!);
-        try {
-          newImageUrl = await snapshot.ref.getDownloadURL();
-        } on FirebaseException catch (e) {
-          if (e.code == 'object-not-found') {
-            debugPrint('Storage object not found immediately after upload. Retrying...');
-            // Fallback: wait a moment or use the original URL
-            newImageUrl = widget.currentImageUrl;
-          } else {
-            rethrow;
-          }
-        }
-      }
 
       // Update Firestore
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
@@ -143,63 +94,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           child: Column(
             children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _primaryColor.withValues(alpha: 0.1),
-                      border: Border.all(color: _primaryColor.withValues(alpha: 0.5), width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
+              Container(
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _primaryColor.withValues(alpha: 0.1),
+                  border: Border.all(color: _primaryColor.withValues(alpha: 0.5), width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 20,
+                      spreadRadius: 5,
                     ),
-                    child: ClipOval(
-                      child: _imageFile != null
-                          ? Image.file(_imageFile!, fit: BoxFit.cover)
-                          : widget.currentImageUrl != null && widget.currentImageUrl!.isNotEmpty
-                              ? Image.network(
-                                  widget.currentImageUrl!, 
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(child: CircularProgressIndicator());
-                                  },
-                                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, size: 60, color: _primaryColor),
-                                )
-                              : const Icon(Icons.person, size: 60, color: _primaryColor),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: _pickImage,
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: _primaryColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
+                child: ClipOval(
+                  child: widget.currentImageUrl != null && widget.currentImageUrl!.isNotEmpty
+                      ? Image.network(
+                          widget.currentImageUrl!, 
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(child: CircularProgressIndicator());
+                          },
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, size: 60, color: _primaryColor),
+                        )
+                      : const Icon(Icons.person, size: 60, color: _primaryColor),
+                ),
               ),
               const SizedBox(height: 48),
               _buildTextField(

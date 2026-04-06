@@ -74,6 +74,7 @@ class AddTransactionFormState extends State<AddTransactionForm> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Transaction added successfully")),
           );
+          Navigator.pop(context);
         } else if (state is TransactionFailure) {
           ScaffoldMessenger.of(
             context,

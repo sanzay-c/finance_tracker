@@ -172,6 +172,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                     ),
                                   )
                                   : ListView.separated(
+                                    padding: const EdgeInsets.only(bottom: 100),
                                     itemCount: wallets.length,
                                     separatorBuilder:
                                         (_, __) => const SizedBox(height: 16),
