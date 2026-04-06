@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_tracker/features/auth/services/auth_service.dart';
 import 'package:finance_tracker/features/auth/login/login.dart';
 import 'package:finance_tracker/features/profile/presentation/screens/profile_setting_screen.dart';
+import 'package:finance_tracker/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/l10n_helper/l10n_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -186,7 +187,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               label: l10.editProfile,
               textColor: textColor,
               isDark: isDark,
-              onTap: () {},
+              onTap: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EditProfileScreen(
+                      currentName: fullName,
+                      currentImageUrl: profileImageUrl,
+                    ),
+                  ),
+                );
+                if (result == true) {
+                  _loadUserProfile();
+                }
+              },
             ),
             _TileItem(
               icon: Icons.settings_outlined,

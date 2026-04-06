@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const _primaryColor = Color(0xFF48319D);
+
 class ProfileSettingScreen extends StatefulWidget {
   const ProfileSettingScreen({super.key});
 
@@ -25,111 +27,176 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
     _isDarkTheme = context.read<ThemeBloc>().state is DarkThemeState;
   }
 
-  void _loadLanguagePreference() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? isNepali = prefs.getBool('isNepaliSelected');
-
-    if (isNepali != null) {
-      setState(() {
-        _isNepaliSelected = isNepali;
-      });
+  Future<void> _loadLanguagePreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isNepali = prefs.getBool('isNepaliSelected');
+    if (isNepali != null && mounted) {
+      setState(() => _isNepaliSelected = isNepali);
     }
   }
 
-  void _saveLanguagePreference(bool value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> _saveLanguagePreference(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isNepaliSelected', value);
   }
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = getColorByTheme(
+        context: context, colorClass: AppColors.backgroundColor);
+    final textColor = getColorByTheme(
+        context: context, colorClass: AppColors.textColor);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: getColorByTheme(
-        context: context,
-        colorClass: AppColors.backgroundColor,
-      ),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: getColorByTheme(
-          context: context,
-          colorClass: AppColors.backgroundColor,
+        backgroundColor: bgColor,
+        elevation: 0,
+        title: Text(
+          l10.profileSetting,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: textColor,
+          ),
         ),
-        title: Text(l10.profileSetting),
+        iconTheme: IconThemeData(color: textColor),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            24.verticalSpace,
-            Text(
-              l10.langaugeSetting,
-              style: TextStyle(
-                fontSize: 32.sp,
-                fontWeight: FontWeight.bold,
-                color: getColorByTheme(
-                  context: context,
-                  colorClass: AppColors.profileTextColor,
+      body: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        children: [
+          // ── Language ──────────────────────────────────────────────────
+          _SectionLabel(label: l10.langaugeSetting, textColor: textColor),
+          const SizedBox(height: 10),
+          _SettingTile(
+            isDark: isDark,
+            textColor: textColor,
+            child: Row(
+              children: [
+                Icon(Icons.language_rounded,
+                    color: _primaryColor, size: 22),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    _isNepaliSelected ? 'Nepali' : 'English',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            8.verticalSpace,
-            SwitchListTile(
-              title: Text(_isNepaliSelected ? 'Nepali' : 'English'),
-              value: _isNepaliSelected,
-              onChanged: (value) {
-                setState(() {
-                  _isNepaliSelected = value;
-                });
-
-                _saveLanguagePreference(value);
-
-                if (_isNepaliSelected) {
-                  context.read<LanguageBloc>().add(
-                    ChangeLanguageEvent(Locale('ne')),
-                  );
-                } else {
-                  context.read<LanguageBloc>().add(
-                    ChangeLanguageEvent(Locale('en')),
-                  );
-                }
-              },
-              activeThumbColor: Colors.blue,
-              inactiveThumbColor: Colors.grey,
-              activeThumbImage: NetworkImage(
-                'https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D',
-              ),
-            ),
-
-            24.verticalSpace,
-
-            Text(
-              l10.themeToggle,
-              style: TextStyle(
-                fontSize: 32.sp,
-                fontWeight: FontWeight.bold,
-                color: getColorByTheme(
-                  context: context,
-                  colorClass: AppColors.profileTextColor,
+                Switch.adaptive(
+                  value: _isNepaliSelected,
+                  onChanged: (value) {
+                    setState(() => _isNepaliSelected = value);
+                    _saveLanguagePreference(value);
+                    context.read<LanguageBloc>().add(
+                          ChangeLanguageEvent(
+                              Locale(value ? 'ne' : 'en')),
+                        );
+                  },
+                  activeThumbColor: _primaryColor,
                 ),
-              ),
+              ],
             ),
-            8.verticalSpace,
-            SwitchListTile(
-              title: Text(_isDarkTheme ? 'Dark Theme' : 'Light Theme'),
-              value: _isDarkTheme,
-              onChanged: (value) {
-                setState(() {
-                  _isDarkTheme = value;
-                });
+          ),
 
-                context.read<ThemeBloc>().add(ToggleThemeEvent());
-              },
-              activeThumbColor: Colors.blue,
-              inactiveThumbColor: Colors.grey,
+          const SizedBox(height: 28),
+
+          // ── Appearance ────────────────────────────────────────────────
+          _SectionLabel(label: l10.themeToggle, textColor: textColor),
+          const SizedBox(height: 10),
+          _SettingTile(
+            isDark: isDark,
+            textColor: textColor,
+            child: Row(
+              children: [
+                Icon(
+                  _isDarkTheme
+                      ? Icons.nights_stay_rounded
+                      : Icons.wb_sunny_rounded,
+                  color: _primaryColor,
+                  size: 22,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    _isDarkTheme ? 'Dark Theme' : 'Light Theme',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+                Switch.adaptive(
+                  value: _isDarkTheme,
+                  onChanged: (value) {
+                    setState(() => _isDarkTheme = value);
+                    context.read<ThemeBloc>().add(ToggleThemeEvent());
+                  },
+                  activeThumbColor: _primaryColor,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+// ─── Section Label ────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  final Color textColor;
+  const _SectionLabel({required this.label, required this.textColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: TextStyle(
+        fontSize: 32.sp,
+        fontWeight: FontWeight.w600,
+        color: textColor.withValues(alpha: 0.45),
+        letterSpacing: 0.6,
+      ),
+    );
+  }
+}
+
+// ─── Setting Tile ─────────────────────────────────────────────────────────────
+
+class _SettingTile extends StatelessWidget {
+  final Widget child;
+  final bool isDark;
+  final Color textColor;
+  const _SettingTile(
+      {required this.child, required this.isDark, required this.textColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: textColor.withValues(alpha: 0.07)),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+      ),
+      child: child,
     );
   }
 }

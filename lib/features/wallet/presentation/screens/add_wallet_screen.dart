@@ -45,10 +45,19 @@ class _AddWalletScreenState extends State<AddWalletScreen> {
           .ref()
           .child('wallets')
           .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
-      
-      final uploadTask = await storageRef.putFile(imageFile);
-      final downloadUrl = await uploadTask.ref.getDownloadURL();
-      return downloadUrl;
+
+      final snapshot = await storageRef.putFile(imageFile);
+      try {
+        final downloadUrl = await snapshot.ref.getDownloadURL();
+        return downloadUrl;
+      } on FirebaseException catch (e) {
+        if (e.code == 'object-not-found') {
+          debugPrint('Storage object not found immediately after upload.');
+          return null;
+        } else {
+          rethrow;
+        }
+      }
     } catch (e) {
       debugPrint('Error uploading image: $e');
       return null;
