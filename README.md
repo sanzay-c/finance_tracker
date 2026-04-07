@@ -53,7 +53,8 @@ App flow from login to profile:
 | Architecture | Clean Architecture |
 
 ---
-
+### 📥 Download the App
+[![Download APK](https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android)](https://github.com/sanzay-c/finance_tracker/releases/download/v1.0.0/app-release.apk)
 <div align="center">
  
 </div>
