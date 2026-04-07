@@ -16,6 +16,8 @@ class AllTransactionsScreen extends StatelessWidget {
         colorClass: AppColors.backgroundColor,
       ),
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.transparent,
         backgroundColor: getColorByTheme(
           context: context,
           colorClass: AppColors.backgroundColor,
@@ -71,7 +73,7 @@ class AllTransactionsScreen extends StatelessWidget {
                       height: 45,
                       width: 45,
                       decoration: BoxDecoration(
-                        color: isIncome ? Colors.green : Colors.grey.shade600,
+                        color: isIncome ? Colors.green : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: isIncome

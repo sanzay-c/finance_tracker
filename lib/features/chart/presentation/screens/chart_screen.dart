@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/core/utils/date_parser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -133,7 +133,7 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
       return DateTime(int.parse(label));
     }
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

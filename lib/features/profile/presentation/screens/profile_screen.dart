@@ -6,7 +6,9 @@ import 'package:finance_tracker/features/profile/presentation/screens/edit_profi
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/l10n_helper/l10n_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:finance_tracker/core/services/pdf_report_service.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _primaryColor = Color(0xFF48319D);
@@ -22,6 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _auth = AuthService();
   String? fullName;
   String? profileImageUrl;
+  bool _isGeneratingReport = false;
+  DateTime _selectedDateForReport = DateTime.now();
 
   @override
   void initState() {
@@ -33,10 +37,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final doc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
       final data = doc.data();
       if (data != null && mounted) {
         setState(() {
@@ -68,7 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.green.shade700,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+              borderRadius: BorderRadius.circular(10),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -78,11 +81,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                'Error: ${e.toString().replaceAll("Exception: ", "")}'),
+              'Error: ${e.toString().replaceAll("Exception: ", "")}',
+            ),
             behavior: SnackBarBehavior.floating,
             backgroundColor: Colors.red.shade700,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+              borderRadius: BorderRadius.circular(10),
+            ),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -90,24 +95,85 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _showMonthPicker() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateForReport,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDatePickerMode: DatePickerMode.year,
+      helpText: 'Select Report Month',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: _primaryColor,
+              onPrimary: Colors.white,
+              onSurface: Colors.black87,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDateForReport = picked;
+      });
+      _generateReport();
+    }
+  }
+
+  Future<void> _generateReport() async {
+    setState(() => _isGeneratingReport = true);
+    try {
+      await PdfReportService.generateMonthlyReport(_selectedDateForReport);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Report generated successfully!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error: ${e.toString().replaceAll("Exception: ", "")}',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGeneratingReport = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bgColor = getColorByTheme(
-        context: context, colorClass: AppColors.backgroundColor);
+      context: context,
+      colorClass: AppColors.backgroundColor,
+    );
     final textColor = getColorByTheme(
-        context: context, colorClass: AppColors.textColor);
+      context: context,
+      colorClass: AppColors.textColor,
+    );
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final email = FirebaseAuth.instance.currentUser?.email ?? '';
 
-    final initials = (fullName != null && fullName!.trim().isNotEmpty)
-        ? fullName!
-            .trim()
-            .split(' ')
-            .map((e) => e[0])
-            .take(2)
-            .join()
-            .toUpperCase()
-        : '?';
+    final initials =
+        (fullName != null && fullName!.trim().isNotEmpty)
+            ? fullName!
+                .trim()
+                .split(' ')
+                .map((e) => e[0])
+                .take(2)
+                .join()
+                .toUpperCase()
+            : '?';
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -140,15 +206,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     shape: BoxShape.circle,
                     color: _primaryColor.withValues(alpha: 0.12),
                     border: Border.all(
-                        color: _primaryColor.withValues(alpha: 0.25), width: 2),
+                      color: _primaryColor.withValues(alpha: 0.25),
+                      width: 2,
+                    ),
                   ),
                   child: ClipOval(
-                    child: profileImageUrl != null &&
-                            profileImageUrl!.isNotEmpty
-                        ? Image.network(profileImageUrl!, fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                _InitialsView(initials: initials))
-                        : _InitialsView(initials: initials),
+                    child:
+                        profileImageUrl != null && profileImageUrl!.isNotEmpty
+                            ? Image.network(
+                              profileImageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (_, __, ___) =>
+                                      _InitialsView(initials: initials),
+                            )
+                            : _InitialsView(initials: initials),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -179,8 +251,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             const SizedBox(height: 32),
-            Divider(color: textColor.withValues(alpha: 0.07), height: 1),
-            const SizedBox(height: 8),
+            Text(
+              "REPORT",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: textColor.withValues(alpha: 0.5),
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            _TileItem(
+              icon: Icons.picture_as_pdf_outlined,
+              label: 'Download PDF Report',
+              textColor: textColor,
+              isDark: isDark,
+              onTap: _isGeneratingReport ? () {} : _showMonthPicker,
+              trailing:
+                  _isGeneratingReport
+                      ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: _primaryColor,
+                        ),
+                      )
+                      : Text(
+                        DateFormat('MMM yyyy').format(_selectedDateForReport),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: textColor.withValues(alpha: 0.4),
+                        ),
+                      ),
+            ),
+
+            const SizedBox(height: 24),
+            Text(
+              "SETTING",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: textColor.withValues(alpha: 0.5),
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 12),
 
             _TileItem(
               icon: Icons.person_outline_rounded,
@@ -191,10 +308,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => EditProfileScreen(
-                      currentName: fullName,
-                      currentImageUrl: profileImageUrl,
-                    ),
+                    builder:
+                        (_) => EditProfileScreen(
+                          currentName: fullName,
+                          currentImageUrl: profileImageUrl,
+                        ),
                   ),
                 );
                 if (result == true) {
@@ -210,8 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (_) => ProfileSettingScreen()),
+                  MaterialPageRoute(builder: (_) => ProfileSettingScreen()),
                 );
               },
             ),
@@ -237,7 +354,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-
 class _InitialsView extends StatelessWidget {
   final String initials;
   const _InitialsView({required this.initials});
@@ -257,7 +373,6 @@ class _InitialsView extends StatelessWidget {
   }
 }
 
-
 class _TileItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -265,15 +380,23 @@ class _TileItem extends StatelessWidget {
   final Color? iconColor;
   final bool isDark;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   const _TileItem({
     required this.icon,
     required this.label,
     required this.textColor,
+    this.iconColor,
     required this.isDark,
     required this.onTap,
-    this.iconColor,
+    this.trailing,
   });
+
+  //   required this.isDark,
+  //   required this.onTap,
+  //   this.iconColor,
+  //   this.trailing,
+  // });
 
   @override
   Widget build(BuildContext context) {
@@ -297,15 +420,18 @@ class _TileItem extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 14,
-              // ignore: unnecessary_type_check
-              color: textColor is Color
-                  // ignore: unnecessary_cast
-                  ? (textColor as Color).withValues(alpha: 0.3)
-                  : Colors.grey.withValues(alpha: 0.3),
-            ),
+            trailing ??
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  // ignore: unnecessary_type_check
+                  color:
+                      // ignore: unnecessary_type_check
+                      textColor is Color
+                          // ignore: unnecessary_cast
+                          ? (textColor as Color).withValues(alpha: 0.3)
+                          : Colors.grey.withValues(alpha: 0.3),
+                ),
           ],
         ),
       ),

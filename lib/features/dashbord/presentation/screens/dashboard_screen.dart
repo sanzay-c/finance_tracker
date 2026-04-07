@@ -250,7 +250,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 height: 45,
                                 width: 45,
                                 decoration: BoxDecoration(
-                                  color: isIncome ? Colors.green : const Color.fromARGB(255, 234, 231, 231),
+                                  color: isIncome ? Colors.green : Colors.transparent,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child:
