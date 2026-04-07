@@ -25,4 +25,19 @@ class WalletRemoteDataSource {
       return WalletModel.fromMap(data);
     }).toList();
   }
+
+  Stream<List<WalletModel>> watchWallets() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return Stream.value([]);
+
+    return firestore
+        .collection('wallets')
+        .where('uid', isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return WalletModel.fromMap(doc.data());
+      }).toList();
+    });
+  }
 }

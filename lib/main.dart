@@ -6,6 +6,7 @@ import 'package:finance_tracker/features/wallet/data/remote_data_source/wallet_r
 import 'package:finance_tracker/features/wallet/data/repo_impl.dart/wallet_repo_impl.dart';
 import 'package:finance_tracker/features/wallet/domain/usecases/add_wallet.dart';
 import 'package:finance_tracker/features/wallet/domain/usecases/get_wallet.dart';
+import 'package:finance_tracker/features/wallet/domain/usecases/watch_wallets.dart';
 import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
 import 'package:finance_tracker/core/global_data/global_localizations/app_local/app_local.dart';
 import 'package:finance_tracker/core/global_data/global_theme/bloc/theme_bloc.dart';
@@ -49,23 +50,18 @@ Future<void> main() async {
         BlocProvider(create: (context) => DashboardBloc(),),
         BlocProvider(create: (context) => FetchTransactionBloc(),),
         BlocProvider(
-          create:
-              (context) => AddWalletBloc(
-                addWallet: AddWallet(
-                  repository: WalletRepositoryImpl(
-                    remoteDataSource: WalletRemoteDataSource(
-                      firestore: FirebaseFirestore.instance,
-                    ),
-                  ),
-                ),
-                getWallets: GetWallets(
-                  repository: WalletRepositoryImpl(
-                    remoteDataSource: WalletRemoteDataSource(
-                      firestore: FirebaseFirestore.instance,
-                    ),
-                  ),
-                ), 
+          create: (context) {
+            final repo = WalletRepositoryImpl(
+              remoteDataSource: WalletRemoteDataSource(
+                firestore: FirebaseFirestore.instance,
               ),
+            );
+            return AddWalletBloc(
+              addWallet: AddWallet(repository: repo),
+              getWallets: GetWallets(repository: repo),
+              watchWallets: WatchWallets(repository: repo),
+            )..add(FetchWalletsEvent());
+          },
         ),
       ],
       child: (const MyApp()),

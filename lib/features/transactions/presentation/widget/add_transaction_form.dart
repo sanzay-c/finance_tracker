@@ -1,5 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:finance_tracker/features/wallet/presentation/bloc/add_wallet_bloc.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
 import 'package:finance_tracker/features/transactions/domain/entities/transaction_entity.dart';
 import 'package:finance_tracker/features/transactions/presentation/bloc/transaction_bloc.dart';
@@ -44,26 +43,6 @@ class AddTransactionFormState extends State<AddTransactionForm> {
   @override
   void initState() {
     super.initState();
-    fetchWallets();
-  }
-
-  Future<void> fetchWallets() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
-
-    final snapshot = await FirebaseFirestore.instance
-        .collection('wallets')
-        .where('uid', isEqualTo: uid)
-        .get();
-    final wallets =
-        snapshot.docs.map((doc) {
-          final data = doc.data();
-          return WalletModel.fromMap(data);
-        }).toList();
-
-    setState(() {
-      walletList = wallets;
-    });
   }
 
   @override
@@ -148,16 +127,31 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                     ),
                   ),
                 ),
-                DropdownButtonFormField<String>(
-                  initialValue: selectedWalletId,
-                  dropdownColor: getColorByTheme(
-                    context: context,
-                    colorClass: AppColors.backgroundColor,
-                  ),
-                  decoration: _inputDecoration(),
-                  hint: const Text("Select Wallet"),
-                  items:
-                      walletList.map((wallet) {
+                BlocBuilder<AddWalletBloc, AddWalletState>(
+                  builder: (context, state) {
+                    List<WalletModel> wallets = [];
+                    if (state is GetWalletsLoaded) {
+                      wallets = state.wallets.map((w) => WalletModel(
+                        id: w.id,
+                        name: w.name,
+                        amount: w.amount,
+                        uid: w.uid,
+                        createdAt: w.createdAt,
+                        totalExpenses: w.totalExpenses,
+                        totalIncome: w.totalIncome,
+                        imageUrl: w.imageUrl,
+                      )).toList();
+                    }
+
+                    return DropdownButtonFormField<String>(
+                      initialValue: selectedWalletId,
+                      dropdownColor: getColorByTheme(
+                        context: context,
+                        colorClass: AppColors.backgroundColor,
+                      ),
+                      decoration: _inputDecoration(),
+                      hint: const Text("Select Wallet"),
+                      items: wallets.map((wallet) {
                         return DropdownMenuItem<String>(
                           value: wallet.id,
                           child: Text(
@@ -171,11 +165,14 @@ class AddTransactionFormState extends State<AddTransactionForm> {
                           ),
                         );
                       }).toList(),
-                  onChanged:
-                      (value) => setState(() => selectedWalletId = value),
-                  validator:
-                      (value) =>
+                      onChanged: (value) {
+                        setState(() => selectedWalletId = value);
+                        walletList = wallets;
+                      },
+                      validator: (value) =>
                           value == null ? 'Please select a wallet' : null,
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 Text(

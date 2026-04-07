@@ -2,5 +2,6 @@ import 'package:finance_tracker/features/wallet/domain/entities/wallet_entity.da
 
 abstract class WalletRepository {
   Future<List<WalletEntity>> getWallets();
+  Stream<List<WalletEntity>> watchWallets();
   Future<void> addWallet(WalletEntity wallet);
 }

@@ -1,60 +1,84 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finance_tracker/core/utils/date_parser.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_tracker/core/constants/app_color.dart';
-import 'package:finance_tracker/features/transactions/domain/entities/transaction_entity.dart';
+import 'package:finance_tracker/features/dashbord/presentation/bloc/fetch_transaction_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AllTransactionsScreen extends StatelessWidget {
+class AllTransactionsScreen extends StatefulWidget {
   const AllTransactionsScreen({super.key});
 
   @override
+  State<AllTransactionsScreen> createState() => _AllTransactionsScreenState();
+}
+
+class _AllTransactionsScreenState extends State<AllTransactionsScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    context.read<FetchTransactionBloc>().add(FetchTransactionsEvent());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+      context.read<FetchTransactionBloc>().add(LoadMoreTransactionsEvent());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final bgColor = getColorByTheme(
+      context: context,
+      colorClass: AppColors.backgroundColor,
+    );
+    final textColor = getColorByTheme(
+      context: context,
+      colorClass: AppColors.textColor,
+    );
+
     return Scaffold(
-      backgroundColor: getColorByTheme(
-        context: context,
-        colorClass: AppColors.backgroundColor,
-      ),
+      backgroundColor: bgColor,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.transparent,
-        backgroundColor: getColorByTheme(
-          context: context,
-          colorClass: AppColors.backgroundColor,
-        ),
+        backgroundColor: bgColor,
         title: const Text("All Transactions"),
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('transactions')
-            .where('uid', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-            .orderBy('date', descending: true)
-            .get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: BlocBuilder<FetchTransactionBloc, FetchTransactionState>(
+        builder: (context, state) {
+          if (state is FetchTransactionLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          if (state is FetchTransactionError) {
+            return Center(child: Text(state.message));
+          }
+          if (state is! FetchTransactionLoaded || state.transactions.isEmpty) {
             return const Center(child: Text("No transactions found."));
           }
 
-          final transactions = snapshot.data!.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return TransactionEntity(
-              id: data['id'],
-              type: data['type'],
-              walletId: data['walletId'],
-              category: data['category'],
-              date: DateParser.parse(data['date']),
-              amount: (data['amount'] as num).toDouble(),
-              description: data['description'],
-            );
-          }).toList();
+          final transactions = state.transactions;
 
           return ListView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.all(20),
-            itemCount: transactions.length,
+            itemCount: state.hasMore ? transactions.length + 1 : transactions.length,
             itemBuilder: (context, index) {
+              if (index >= transactions.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                );
+              }
+
               final txn = transactions[index];
               final isIncome = txn.type == 'income';
               final sign = isIncome ? "+" : "-";
@@ -62,19 +86,20 @@ class AllTransactionsScreen extends StatelessWidget {
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
+                  color: isIncome ? Colors.green.withValues(alpha: 0.05) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: textColor.withValues(alpha: 0.1)),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      height: 45,
-                      width: 45,
+                      height: 48,
+                      width: 48,
                       decoration: BoxDecoration(
-                        color: isIncome ? Colors.green : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
+                        color: isIncome ? Colors.green : Colors.grey.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: isIncome
                           ? const Icon(
@@ -83,18 +108,21 @@ class AllTransactionsScreen extends StatelessWidget {
                             )
                           : _getCategoryAsset(txn.category) != null
                               ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset(
-                                    _getCategoryAsset(txn.category)!,
-                                    fit: BoxFit.cover,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Image.asset(
+                                      _getCategoryAsset(txn.category)!,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 )
                               : const Icon(
-                                  Icons.category,
-                                  color: Colors.white,
+                                  Icons.category_outlined,
+                                  color: Colors.grey,
                                 ),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,19 +132,19 @@ class AllTransactionsScreen extends StatelessWidget {
                                 ? "Income"
                                 : txn.category ?? "No Category",
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: getColorByTheme(
-                                context: context,
-                                colorClass: AppColors.textColor,
-                              ),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: textColor,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             txn.description ?? "No description",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey.shade600,
+                              color: textColor.withValues(alpha: 0.5),
                             ),
                           ),
                         ],
@@ -128,16 +156,18 @@ class AllTransactionsScreen extends StatelessWidget {
                         Text(
                           amountText,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
                             color: isIncome ? Colors.green : Colors.red,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 4),
                         Text(
                           "${txn.date.day} ${_monthAbbreviation(txn.date.month)}",
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: textColor.withValues(alpha: 0.4),
                           ),
                         ),
                       ],

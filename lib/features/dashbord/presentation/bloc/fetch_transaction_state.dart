@@ -9,8 +9,14 @@ class FetchTransactionLoading extends FetchTransactionState {}
 
 class FetchTransactionLoaded extends FetchTransactionState {
   final List<TransactionEntity> transactions;
+  final DocumentSnapshot? lastDocument;
+  final bool hasMore;
 
-  FetchTransactionLoaded(this.transactions);
+  FetchTransactionLoaded({
+    required this.transactions,
+    this.lastDocument,
+    this.hasMore = true,
+  });
 }
 
 class FetchTransactionError extends FetchTransactionState {

@@ -39,4 +39,24 @@
           )
           .toList();
     }
+
+    @override
+    Stream<List<WalletEntity>> watchWallets() {
+      return remoteDataSource.watchWallets().map((models) {
+        return models
+            .map(
+              (model) => WalletEntity(
+                id: model.id,
+                name: model.name,
+                imageUrl: model.imageUrl,
+                totalExpenses: model.totalExpenses,
+                amount: model.amount,
+                totalIncome: model.totalIncome,
+                createdAt: model.createdAt,
+                uid: '', 
+              ),
+            )
+            .toList();
+      });
+    }
   }

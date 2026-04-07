@@ -229,7 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     return ListView.builder(
                       padding: const EdgeInsets.only(bottom: 80),
-                      itemCount: transactions.length,
+                      itemCount: transactions.length > 5 ? 5 : transactions.length,
                       itemBuilder: (context, index) {
                         final txn = transactions[index];
                         final isIncome = txn.type == 'income';

@@ -84,9 +84,11 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
       }
     }
 
-    setState(() {
-      loading = false;
-    });
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   List<LineChartBarData> buildLineData(Map<String, double> incomeMap, Map<String, double> expenseMap, List<String> keys) {
@@ -134,6 +136,12 @@ class _ChartScreenState extends State<ChartScreen> with TickerProviderStateMixin
     }
   }
   
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

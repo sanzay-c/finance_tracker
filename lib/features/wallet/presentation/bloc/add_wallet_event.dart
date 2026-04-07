@@ -18,3 +18,8 @@ class SubmitWalletEvent extends AddWalletEvent {
 }
 
 class FetchWalletsEvent extends AddWalletEvent {}
+
+class _OnWalletsUpdated extends AddWalletEvent {
+  final List<WalletEntity> wallets;
+  _OnWalletsUpdated(this.wallets);
+}

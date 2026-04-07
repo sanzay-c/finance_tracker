@@ -9,55 +9,91 @@ part 'dashboard_event.dart';
 part 'dashboard_state.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
+  StreamSubscription? _walletSubscription;
+  StreamSubscription? _transactionSubscription;
+
   DashboardBloc() : super(DashboardInitial()) {
     on<FetchDashboardDataEvent>(_onFetchDashboardData);
+    on<_UpdateDashboardDataEvent>(_onUpdateDashboardData);
   }
 
-  FutureOr<void> _onFetchDashboardData(FetchDashboardDataEvent event, Emitter<DashboardState> emit) async {
-    emit(DashboardLoading());
-    try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) {
-        emit(DashboardError('User not logged in'));
-        return;
-      }
+  @override
+  Future<void> close() {
+    _walletSubscription?.cancel();
+    _transactionSubscription?.cancel();
+    return super.close();
+  }
 
-      final walletSnap = await FirebaseFirestore.instance
-          .collection('wallets')
-          .where('uid', isEqualTo: uid)
-          .get();
-      final transactionSnap = await FirebaseFirestore.instance
+  void _onFetchDashboardData(FetchDashboardDataEvent event, Emitter<DashboardState> emit) {
+    emit(DashboardLoading());
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      emit(DashboardError('User not logged in'));
+      return;
+    }
+
+    _walletSubscription?.cancel();
+    _transactionSubscription?.cancel();
+
+    _walletSubscription = FirebaseFirestore.instance
+        .collection('wallets')
+        .where('uid', isEqualTo: uid)
+        .snapshots()
+        .listen((walletSnap) {
+      FirebaseFirestore.instance
           .collection('transactions')
           .where('uid', isEqualTo: uid)
-          .get();
+          .get() 
+          .then((transactionSnap) {
+        add(_UpdateDashboardDataEvent(walletSnap, transactionSnap));
+      });
+    });
 
-      double totalBalance = 0;
-      double totalIncome = 0;
-      double totalExpense = 0;
-
-      for (var wallet in walletSnap.docs) {
-        totalBalance += (wallet.data()['amount'] as num).toDouble();
-      }
-
-      for (var txn in transactionSnap.docs) {
-        final data = txn.data();
-        final type = data['type'];
-        final amount = (data['amount'] as num).toDouble();
-        if (type == 'income') {
-          totalIncome += amount;
-        } else {
-          totalExpense += amount;
-        }
-      }
-
-      emit(DashboardLoaded(
-        totalBalance: totalBalance,
-        totalIncome: totalIncome,
-        totalExpense: totalExpense,
-      ));
-    } catch (e) {
-      emit(DashboardError('Failed to load dashboard data'));
-    }
+    _transactionSubscription = FirebaseFirestore.instance
+        .collection('transactions')
+        .where('uid', isEqualTo: uid)
+        .snapshots()
+        .listen((transactionSnap) {
+       FirebaseFirestore.instance
+          .collection('wallets')
+          .where('uid', isEqualTo: uid)
+          .get()
+          .then((walletSnap) {
+        add(_UpdateDashboardDataEvent(walletSnap, transactionSnap));
+      });
+    });
   }
 
+  FutureOr<void> _onUpdateDashboardData(_UpdateDashboardDataEvent event, Emitter<DashboardState> emit) {
+    double totalBalance = 0;
+    double totalIncome = 0;
+    double totalExpense = 0;
+
+    for (var wallet in event.walletSnap.docs) {
+      totalBalance += (wallet.data()['amount'] as num).toDouble();
+    }
+
+    for (var txn in event.transactionSnap.docs) {
+      final data = txn.data();
+      final type = data['type'];
+      final amount = (data['amount'] as num).toDouble();
+      if (type == 'income') {
+        totalIncome += amount;
+      } else {
+        totalExpense += amount;
+      }
+    }
+
+    emit(DashboardLoaded(
+      totalBalance: totalBalance,
+      totalIncome: totalIncome,
+      totalExpense: totalExpense,
+    ));
+  }
+}
+
+class _UpdateDashboardDataEvent extends DashboardEvent {
+  final QuerySnapshot<Map<String, dynamic>> walletSnap;
+  final QuerySnapshot<Map<String, dynamic>> transactionSnap;
+  _UpdateDashboardDataEvent(this.walletSnap, this.transactionSnap);
 }
