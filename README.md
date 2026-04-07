@@ -55,5 +55,5 @@ App flow from login to profile:
 ---
 
 <div align="center">
-  Made with ❤️ using Flutter
+ 
 </div>
